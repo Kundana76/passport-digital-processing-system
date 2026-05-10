@@ -6,6 +6,10 @@
 
 ## 🚀 Live Demo
 
+## 🔗 GitHub Repository
+
+[Passport Digital Processing System](https://github.com/Kundana76/passport-digital-processing-system)
+
 Open `index.html` in any modern browser. No installation needed.
 
 **Demo Credentials:**

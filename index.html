@@ -1,0 +1,3252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPDPS – National Passport Digital Processing System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a1628;
+  --navy-mid: #142240;
+  --navy-light: #1e3560;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-pale: #f5ecd4;
+  --cream: #faf8f3;
+  --white: #ffffff;
+  --gray-50: #f8f7f4;
+  --gray-100: #eeece6;
+  --gray-200: #d8d5cb;
+  --gray-400: #9e9a8e;
+  --gray-600: #6b6760;
+  --gray-800: #3a3832;
+  --success: #1a6b3c;
+  --success-bg: #e8f5ee;
+  --warning: #7a5200;
+  --warning-bg: #fff3d6;
+  --danger: #8b1a1a;
+  --danger-bg: #fdeaea;
+  --info: #1a4a7a;
+  --info-bg: #e6eef8;
+  --font-serif: 'EB Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow: 0 2px 12px rgba(0,0,0,.1);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.15);
+  --transition: 180ms ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--cream);
+  color: var(--gray-800);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+#app { min-height: 100vh; }
+
+/* ── UTILITIES ── */
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+.gap-8 { gap: 32px; }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-mono { font-family: var(--font-mono); }
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 11px; }
+.text-lg { font-size: 18px; }
+.text-xl { font-size: 22px; }
+.text-2xl { font-size: 28px; }
+.text-3xl { font-size: 36px; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.text-muted { color: var(--gray-400); }
+.text-secondary { color: var(--gray-600); }
+.text-gold { color: var(--gold); }
+.text-navy { color: var(--navy); }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mt-8 { margin-top: 32px; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.mb-8 { margin-bottom: 32px; }
+.p-2 { padding: 8px; }
+.p-3 { padding: 12px; }
+.p-4 { padding: 16px; }
+.p-6 { padding: 24px; }
+.p-8 { padding: 32px; }
+.px-3 { padding-left: 12px; padding-right: 12px; }
+.px-4 { padding-left: 16px; padding-right: 16px; }
+.px-6 { padding-left: 24px; padding-right: 24px; }
+.py-2 { padding-top: 8px; padding-bottom: 8px; }
+.py-3 { padding-top: 12px; padding-bottom: 12px; }
+.py-4 { padding-top: 16px; padding-bottom: 16px; }
+.rounded { border-radius: var(--radius); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: 9999px; }
+.border { border: 1px solid var(--gray-200); }
+.border-b { border-bottom: 1px solid var(--gray-200); }
+.border-t { border-top: 1px solid var(--gray-200); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.overflow-hidden { overflow: hidden; }
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-danger { background: var(--danger-bg); color: var(--danger); }
+.badge-info { background: var(--info-bg); color: var(--info); }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+.badge-gold { background: var(--gold-pale); color: #7a5a00; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--navy);
+  color: var(--white);
+}
+.btn-primary:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-primary:active { transform: translateY(0); }
+.btn-gold {
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 600;
+}
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-outline {
+  background: transparent;
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+}
+.btn-outline:hover { background: var(--navy); color: var(--white); }
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+.btn-ghost:hover { background: var(--gray-50); color: var(--gray-800); }
+.btn-danger { background: var(--danger); color: var(--white); }
+.btn-danger:hover { background: #a52020; }
+.btn-success { background: var(--success); color: var(--white); }
+.btn-success:hover { background: #1f7f47; }
+.btn-sm { padding: 6px 14px; font-size: 13px; }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+.btn-loading { position: relative; color: transparent !important; }
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  top: 50%; left: 50%;
+  margin: -8px 0 0 -8px;
+}
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  letter-spacing: .01em;
+}
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--gray-800);
+  background: var(--white);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+.form-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(10,22,40,.08); }
+.form-input.error { border-color: var(--danger); }
+.form-input::placeholder { color: var(--gray-400); }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%239e9a8e' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.form-helper { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+.form-error { font-size: 12px; color: var(--danger); margin-top: 4px; }
+textarea.form-input { resize: vertical; min-height: 80px; }
+
+/* ── ALERTS ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.alert-success { background: var(--success-bg); color: var(--success); border: 1px solid #b8ddc9; }
+.alert-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid #f0b8b8; }
+.alert-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid #f0d899; }
+.alert-info { background: var(--info-bg); color: var(--info); border: 1px solid #b8cee8; }
+
+/* ── ANIMATIONS ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-fade { animation: fadeIn .3s ease forwards; }
+.animate-slide { animation: slideDown .25s ease forwards; }
+.loading-pulse { animation: pulse 1.5s ease infinite; }
+.loading-spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 2px solid var(--gray-200);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+/* ── PROGRESS ── */
+.progress-bar {
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--navy), var(--gold));
+  border-radius: 99px;
+  transition: width .5s ease;
+}
+
+/* ── TOAST ── */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--navy);
+  color: var(--white);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn .3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 380px;
+}
+.toast-success { background: var(--success); }
+.toast-danger { background: var(--danger); }
+.toast-warning { background: #a06b00; }
+
+/* ── GOVT BANNER ── */
+.govt-banner {
+  background: var(--navy);
+  color: var(--gold-light);
+  padding: 8px 0;
+  font-size: 12px;
+  letter-spacing: .04em;
+  text-align: center;
+  font-family: var(--font-serif);
+}
+.govt-banner-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.govt-banner-inner {
+  display: inline-flex;
+  gap: 48px;
+  animation: marquee 40s linear infinite;
+}
+
+/* ── TOP NAVBAR ── */
+.topnav {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-100);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topnav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topnav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--navy);
+}
+.logo-emblem {
+  width: 40px;
+  height: 40px;
+  background: var(--navy);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.logo-emblem svg { width: 24px; height: 24px; }
+.logo-text { line-height: 1.2; }
+.logo-name { font-family: var(--font-serif); font-size: 16px; font-weight: 600; letter-spacing: .01em; }
+.logo-tagline { font-size: 10px; letter-spacing: .08em; color: var(--gray-400); text-transform: uppercase; }
+.topnav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 8px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.nav-user-pill:hover { background: var(--gray-100); }
+.nav-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 200;
+}
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  color: var(--gray-800);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-dropdown-item:hover { background: var(--gray-50); }
+.nav-dropdown-item.danger { color: var(--danger); }
+.nav-dropdown-sep { height: 1px; background: var(--gray-100); margin: 4px 0; }
+.nav-notif-dot {
+  width: 8px; height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  position: absolute;
+  top: -1px; right: -1px;
+  border: 2px solid var(--white);
+}
+
+/* ── SIDEBAR ── */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--gray-100);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-section-title {
+  padding: 0 16px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--gray-600);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: all var(--transition);
+  border-radius: 0;
+  position: relative;
+  text-decoration: none;
+}
+.sidebar-item:hover { background: var(--gray-50); color: var(--gray-800); }
+.sidebar-item.active { background: var(--navy); color: var(--white); font-weight: 500; }
+.sidebar-item.active svg { opacity: 1; }
+.sidebar-item svg { width: 18px; height: 18px; opacity: .7; flex-shrink: 0; }
+.sidebar-item .sidebar-badge {
+  margin-left: auto;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+.sidebar-item.active .sidebar-badge { background: rgba(201,168,76,.3); color: var(--gold-light); }
+.sidebar-sep { height: 1px; background: var(--gray-100); margin: 10px 0; }
+
+.main-content {
+  flex: 1;
+  padding: 32px;
+  max-width: calc(100% - 240px);
+  overflow-x: hidden;
+}
+.page-header {
+  margin-bottom: 28px;
+}
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--gray-400);
+}
+
+/* ── STAT CARDS ── */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.stat-card.navy::before { background: var(--navy); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.success::before { background: var(--success); }
+.stat-card.danger::before { background: var(--danger); }
+.stat-label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--gray-400); margin-bottom: 8px; }
+.stat-value { font-family: var(--font-serif); font-size: 36px; font-weight: 600; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+.stat-change { font-size: 12px; color: var(--gray-400); }
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--danger); }
+.stat-icon {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .15;
+}
+.stat-icon svg { width: 24px; height: 24px; }
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--gray-400);
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-100);
+}
+.data-table td {
+  padding: 13px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-50);
+  color: var(--gray-800);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--gray-50); }
+.data-table .app-id { font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--gray-100);
+}
+.timeline-item { position: relative; padding-bottom: 24px; }
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot {
+  position: absolute;
+  left: -24px;
+  top: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+}
+.timeline-dot.done { background: var(--success); border-color: var(--success); }
+.timeline-dot.active { background: var(--gold); border-color: var(--gold); animation: pulse 1.5s ease infinite; }
+.timeline-dot.pending { background: var(--gray-100); border-color: var(--gray-200); }
+.timeline-label { font-size: 14px; font-weight: 500; color: var(--navy); margin-bottom: 2px; }
+.timeline-sub { font-size: 12px; color: var(--gray-400); }
+
+/* ── STEP PROGRESS ── */
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  gap: 6px;
+}
+.step-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 15px;
+  width: 100%;
+  height: 2px;
+  background: var(--gray-200);
+  z-index: 0;
+}
+.step-item.done:not(:last-child)::after { background: var(--success); }
+.step-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-400);
+  position: relative;
+  z-index: 1;
+}
+.step-item.active .step-circle { background: var(--navy); border-color: var(--navy); color: var(--white); }
+.step-item.done .step-circle { background: var(--success); border-color: var(--success); color: var(--white); }
+.step-label { font-size: 11px; font-weight: 500; color: var(--gray-400); text-align: center; max-width: 80px; }
+.step-item.active .step-label { color: var(--navy); }
+.step-item.done .step-label { color: var(--success); }
+
+/* ── FILE UPLOAD ── */
+.upload-zone {
+  border: 2px dashed var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--gray-50);
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--navy);
+  background: var(--info-bg);
+}
+.upload-zone input { display: none; }
+.upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  margin-top: 8px;
+}
+.upload-preview-icon { color: var(--navy); opacity: .6; }
+.upload-preview-name { font-size: 13px; font-weight: 500; flex: 1; }
+.upload-preview-remove { cursor: pointer; color: var(--danger); font-size: 18px; line-height: 1; }
+
+/* ── APPOINTMENT CALENDAR ── */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 12px;
+}
+.cal-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-400);
+  padding: 6px 0;
+  text-transform: uppercase;
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+.cal-day.empty { cursor: default; }
+.cal-day.past { color: var(--gray-200); cursor: not-allowed; }
+.cal-day.available:hover { background: var(--info-bg); border-color: var(--navy); color: var(--navy); }
+.cal-day.selected { background: var(--navy); color: var(--white); font-weight: 600; }
+.cal-day.today { font-weight: 700; color: var(--gold); }
+.time-slot {
+  padding: 8px 14px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.time-slot:hover:not(.booked) { border-color: var(--navy); color: var(--navy); }
+.time-slot.selected { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.time-slot.booked { background: var(--gray-50); color: var(--gray-300); cursor: not-allowed; text-decoration: line-through; }
+
+/* ── NOTIFICATION ── */
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gray-50);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.notif-item:hover { background: var(--gray-50); }
+.notif-item.unread { background: var(--info-bg); }
+.notif-item.unread:hover { background: #dce9f5; }
+.notif-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--navy);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.notif-dot.read { background: transparent; border: 1px solid var(--gray-200); }
+.notif-title { font-size: 13px; font-weight: 500; color: var(--navy); margin-bottom: 2px; }
+.notif-body { font-size: 12px; color: var(--gray-400); }
+.notif-time { font-size: 11px; color: var(--gray-300); margin-top: 4px; }
+
+/* ── LANDING PAGE ── */
+.landing-hero {
+  background: var(--navy);
+  color: var(--white);
+  padding: 80px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.landing-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    rgba(201,168,76,.03) 40px,
+    rgba(201,168,76,.03) 80px
+  );
+}
+.landing-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 16px;
+  position: relative;
+}
+.landing-hero-title .accent { color: var(--gold-light); }
+.landing-hero-subtitle {
+  font-size: 17px;
+  color: rgba(255,255,255,.65);
+  max-width: 560px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+.landing-hero-actions { display: flex; gap: 12px; justify-content: center; position: relative; flex-wrap: wrap; }
+.landing-strip {
+  background: var(--gold);
+  padding: 12px 0;
+  overflow: hidden;
+}
+.landing-strip-inner {
+  display: flex;
+  gap: 64px;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+}
+.landing-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: .03em;
+}
+.landing-services {
+  padding: 64px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.service-card {
+  background: var(--white);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.service-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--navy); }
+.service-icon {
+  width: 48px; height: 48px;
+  background: var(--navy);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.service-icon svg { width: 26px; height: 26px; color: var(--gold); }
+.service-title { font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.service-desc { font-size: 13px; color: var(--gray-400); line-height: 1.6; }
+.landing-notices {
+  background: var(--white);
+  border-top: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--gray-100);
+  padding: 48px 24px;
+}
+.notice-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.notice-item:last-child { border-bottom: none; }
+.notice-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+.notice-dot.new { background: var(--danger); }
+.notice-dot.imp { background: var(--gold); }
+.notice-dot.gen { background: var(--success); }
+.notice-title { font-size: 14px; font-weight: 500; color: var(--navy); margin-bottom: 2px; }
+.notice-meta { font-size: 12px; color: var(--gray-400); }
+.faq-item { border-bottom: 1px solid var(--gray-100); }
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 16px 0;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--navy);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+}
+.faq-answer { font-size: 14px; color: var(--gray-600); padding-bottom: 16px; line-height: 1.7; }
+.faq-chevron { transition: transform var(--transition); }
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+.landing-footer {
+  background: var(--navy);
+  color: rgba(255,255,255,.5);
+  padding: 40px 24px 20px;
+  font-size: 13px;
+}
+.footer-logo { font-family: var(--font-serif); font-size: 20px; color: var(--gold-light); margin-bottom: 8px; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 24px; }
+.footer-links a { color: rgba(255,255,255,.5); text-decoration: none; transition: color var(--transition); }
+.footer-links a:hover { color: var(--gold-light); }
+.footer-sep { height: 1px; background: rgba(255,255,255,.1); margin: 20px 0; }
+.footer-copy { font-size: 12px; }
+.footer-disclaimer { font-size: 11px; color: rgba(255,255,255,.3); margin-top: 4px; }
+
+/* ── AUTH ── */
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.auth-left {
+  background: var(--navy);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.auth-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 50px,
+    rgba(201,168,76,.04) 50px,
+    rgba(201,168,76,.04) 100px
+  );
+}
+.auth-left-title { font-family: var(--font-serif); font-size: 38px; color: var(--white); font-weight: 600; line-height: 1.2; margin-bottom: 16px; position: relative; }
+.auth-left-sub { font-size: 15px; color: rgba(255,255,255,.55); line-height: 1.7; margin-bottom: 40px; position: relative; max-width: 360px; }
+.auth-features { position: relative; }
+.auth-feature { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.auth-feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.auth-feature-text { font-size: 14px; color: rgba(255,255,255,.75); }
+.auth-right {
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+.auth-title { font-family: var(--font-serif); font-size: 28px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+.auth-sub { font-size: 14px; color: var(--gray-400); margin-bottom: 28px; }
+.auth-divider { text-align: center; position: relative; margin: 20px 0; }
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: var(--gray-200);
+}
+.auth-divider span { background: var(--cream); padding: 0 12px; font-size: 12px; color: var(--gray-400); position: relative; }
+.auth-link { color: var(--navy); font-weight: 500; cursor: pointer; text-decoration: none; }
+.auth-link:hover { text-decoration: underline; }
+.otp-inputs { display: flex; gap: 8px; }
+.otp-input {
+  width: 48px; height: 52px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color var(--transition);
+}
+.otp-input:focus { border-color: var(--navy); }
+
+/* ── PROFILE COMPLETION ── */
+.profile-complete-ring {
+  position: relative;
+  width: 80px; height: 80px;
+  flex-shrink: 0;
+}
+.profile-complete-ring svg { transform: rotate(-90deg); }
+.profile-complete-ring .ring-track { fill: none; stroke: var(--gray-100); stroke-width: 6; }
+.profile-complete-ring .ring-fill { fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+.ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--navy); }
+
+/* ── FRAUD DETECTION ── */
+.fraud-meter {
+  height: 8px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--gray-100);
+}
+.fraud-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .5s ease;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .auth-page { grid-template-columns: 1fr; }
+  .auth-left { display: none; }
+  .sidebar { width: 200px; }
+  .main-content { padding: 20px; max-width: calc(100% - 200px); }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 650px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--gray-100); padding: 8px 0; flex-direction: row; overflow-x: auto; }
+  .main-content { max-width: 100%; }
+  .sidebar-section-title { display: none; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA LAYER — Simulated backend via localStorage
+// ═══════════════════════════════════════════════════════
+
+const DB = {
+  get(key) {
+    try { return JSON.parse(localStorage.getItem('npdps_' + key)); } catch { return null; }
+  },
+  set(key, val) {
+    localStorage.setItem('npdps_' + key, JSON.stringify(val));
+  },
+  init() {
+    if (!this.get('users')) {
+      this.set('users', [
+        { id: 'u1', name: 'Admin Officer', email: 'admin@npdps.gov.in', password: 'admin123', role: 'admin', avatar: 'AO', verified: true, createdAt: '2024-01-10' },
+        { id: 'u2', name: 'Rajesh Kumar', email: 'rajesh@example.com', password: 'user123', role: 'user', avatar: 'RK', verified: true, createdAt: '2024-03-15', phone: '9876543210', dob: '1990-06-15', aadhaar: '****-****-1234' },
+        { id: 'u3', name: 'Priya Sharma', email: 'priya@example.com', password: 'user123', role: 'user', avatar: 'PS', verified: true, createdAt: '2024-04-02' }
+      ]);
+    }
+    if (!this.get('applications')) {
+      this.set('applications', [
+        {
+          id: 'APP-2024-001847', userId: 'u2', type: 'fresh', category: 'normal',
+          status: 'police_verification',
+          submittedAt: '2024-11-15T10:30:00',
+          updatedAt: '2024-11-28T14:20:00',
+          personal: { fullName: 'Rajesh Kumar', dob: '1990-06-15', gender: 'Male', place_of_birth: 'New Delhi', mother_name: 'Sunita Kumar', father_name: 'Vijay Kumar', spouse_name: '', marital_status: 'Married', pan: 'ABCPK1234D', phone: '9876543210', email: 'rajesh@example.com', nationality: 'Indian' },
+          address: { house: '42, Sector 15', city: 'Gurugram', state: 'Haryana', pin: '122001', district: 'Gurugram', country: 'India', perm_same: true },
+          emergency: { name: 'Sunita Kumar', relation: 'Mother', phone: '9876500001', address: '42, Sector 15, Gurugram' },
+          documents: ['aadhaar.pdf', 'photo.jpg', 'pan.pdf'],
+          appointmentDate: '2024-12-10', appointmentTime: '10:30 AM', center: 'PSK Gurugram',
+          officer: 'off1', fraudScore: 12,
+          timeline: [
+            { status: 'submitted', label: 'Application Submitted', date: '2024-11-15 10:30', done: true },
+            { status: 'scrutiny', label: 'Document Scrutiny', date: '2024-11-18 09:15', done: true },
+            { status: 'police_verification', label: 'Police Verification', date: '2024-11-28 14:20', done: false, active: true },
+            { status: 'approved', label: 'Final Approval', date: null, done: false },
+            { status: 'dispatched', label: 'Passport Dispatched', date: null, done: false },
+          ],
+          notes: 'Documents verified. All details match Aadhaar.',
+          fee: 1500
+        },
+        {
+          id: 'APP-2024-001923', userId: 'u3', type: 'renew', category: 'tatkal',
+          status: 'approved',
+          submittedAt: '2024-11-20T08:45:00',
+          updatedAt: '2024-12-02T11:00:00',
+          personal: { fullName: 'Priya Sharma', dob: '1995-03-22', gender: 'Female', place_of_birth: 'Mumbai', mother_name: 'Rekha Sharma', father_name: 'Anil Sharma', spouse_name: '', marital_status: 'Single', pan: 'BCDPS5678E', phone: '9765432109', email: 'priya@example.com', nationality: 'Indian' },
+          address: { house: '7, Andheri West', city: 'Mumbai', state: 'Maharashtra', pin: '400053', district: 'Mumbai', country: 'India', perm_same: true },
+          emergency: { name: 'Anil Sharma', relation: 'Father', phone: '9765400001', address: '7, Andheri West, Mumbai' },
+          documents: ['aadhaar.pdf', 'photo.jpg', 'old_passport.pdf'],
+          appointmentDate: '2024-11-25', appointmentTime: '09:00 AM', center: 'PSK Mumbai',
+          officer: 'off1', fraudScore: 5,
+          timeline: [
+            { status: 'submitted', label: 'Application Submitted', date: '2024-11-20 08:45', done: true },
+            { status: 'scrutiny', label: 'Document Scrutiny', date: '2024-11-22 10:00', done: true },
+            { status: 'police_verification', label: 'Police Verification', date: '2024-11-27 15:30', done: true },
+            { status: 'approved', label: 'Final Approval', date: '2024-12-02 11:00', done: true, active: true },
+            { status: 'dispatched', label: 'Passport Dispatched', date: null, done: false },
+          ],
+          notes: 'Tatkal application. Expedited processing complete.',
+          fee: 3500
+        }
+      ]);
+    }
+    if (!this.get('appointments')) {
+      this.set('appointments', [
+        { date: '2024-12-10', time: '10:30 AM', center: 'PSK Gurugram', appId: 'APP-2024-001847' },
+        { date: '2024-11-25', time: '09:00 AM', center: 'PSK Mumbai', appId: 'APP-2024-001923' }
+      ]);
+    }
+    if (!this.get('notifications')) {
+      this.set('notifications', [
+        { id: 'n1', userId: 'u2', title: 'Police Verification Initiated', body: 'Your application APP-2024-001847 has been sent for police verification.', time: '2h ago', read: false, type: 'info' },
+        { id: 'n2', userId: 'u2', title: 'Appointment Confirmed', body: 'Your appointment at PSK Gurugram on Dec 10 at 10:30 AM is confirmed.', time: '5d ago', read: true, type: 'success' },
+        { id: 'n3', userId: 'u3', title: 'Application Approved', body: 'Congratulations! Your passport application APP-2024-001923 has been approved.', time: '1d ago', read: false, type: 'success' },
+      ]);
+    }
+    if (!this.get('slots')) {
+      const booked = ['2024-12-10_10:30 AM', '2024-12-10_11:00 AM', '2024-12-12_09:00 AM'];
+      this.set('slots', booked);
+    }
+  }
+};
+DB.init();
+
+// ═══════════════════════════════════════════════════════
+//  AUTH STATE
+// ═══════════════════════════════════════════════════════
+let currentUser = DB.get('session') || null;
+let currentPage = 'landing';
+let appDraft = DB.get('draft') || {};
+
+function setPage(page) {
+  currentPage = page;
+  render();
+  window.scrollTo(0, 0);
+}
+
+function login(user) {
+  currentUser = user;
+  DB.set('session', user);
+}
+
+function logout() {
+  currentUser = null;
+  DB.set('session', null);
+  setPage('landing');
+}
+
+// ═══════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════
+function uid() {
+  return 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+function appId() {
+  const n = Math.floor(1000 + Math.random() * 9000);
+  return 'APP-2025-' + n.toString().padStart(6, '0');
+}
+function now() { return new Date().toISOString(); }
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function statusBadge(s) {
+  const map = {
+    submitted: ['badge-info', '● Submitted'],
+    scrutiny: ['badge-warning', '● Under Scrutiny'],
+    police_verification: ['badge-warning', '● Police Verification'],
+    approved: ['badge-success', '● Approved'],
+    rejected: ['badge-danger', '● Rejected'],
+    dispatched: ['badge-gold', '● Dispatched'],
+    draft: ['badge-gray', '● Draft'],
+  };
+  const [cls, label] = map[s] || ['badge-gray', s];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+function getInitials(name) {
+  return (name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+// Toast
+function toast(msg, type = 'default') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast${type !== 'default' ? ' toast-' + type : ''}`;
+  const icons = { success: '✓', danger: '✗', warning: '⚠', default: 'ℹ' };
+  t.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(40px)'; t.style.transition = 'all .3s ease'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  ICONS
+// ═══════════════════════════════════════════════════════
+const ICONS = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>`,
+  file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm0 0v6h6"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`,
+  bell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>`,
+  user: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`,
+  arrow_right: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+  upload: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>`,
+  passport: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 18h8M8 15h8"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`,
+  users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
+  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  pdf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm0 0v6h6M9 13h6M9 17h6M9 9h1"/></svg>`,
+  alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  chevron_down: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>`,
+  trash: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>`,
+  edit: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  lock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`,
+  mail: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`,
+  refresh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>`,
+  india: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>`,
+};
+
+function icon(name, cls = '') {
+  return `<span class="icon ${cls}" style="display:inline-flex;align-items:center;flex-shrink:0">${ICONS[name] || ''}</span>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  GOVERNMENT BANNER
+// ═══════════════════════════════════════════════════════
+function renderGovtBanner() {
+  const notices = [
+    '🇮🇳 Government of India — Ministry of External Affairs',
+    '📢 Tatkal applications now available online',
+    '⚠ Beware of touts and fraudsters — Apply only through official channels',
+    '📌 New PSK centers opened in Tier-2 cities',
+    '🔔 Applicants must carry original documents for appointment',
+    '✅ Online payment accepted via UPI, Net Banking, Debit/Credit Card',
+  ];
+  const doubled = [...notices, ...notices];
+  return `<div class="govt-banner">
+    <div class="govt-banner-marquee">
+      <div class="govt-banner-inner">
+        ${doubled.map(n => `<span>${n}</span>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVBAR
+// ═══════════════════════════════════════════════════════
+function renderNavbar(showUserMenu = false) {
+  const notifs = currentUser ? (DB.get('notifications') || []).filter(n => n.userId === currentUser.id && !n.read) : [];
+  const unreadCount = notifs.length;
+
+  return `
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <a class="topnav-logo" href="#" onclick="setPage(currentUser ? 'dashboard' : 'landing'); return false;">
+        <div class="logo-emblem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="${'#c9a84c'}" stroke-width="1.8">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <circle cx="12" cy="10" r="3"/>
+            <path d="M8 18h8M8 15h8"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <div class="logo-name">NPDPS</div>
+          <div class="logo-tagline">National Passport Digital Processing System</div>
+        </div>
+      </a>
+
+      <div class="topnav-actions">
+        ${currentUser ? `
+          <div style="position:relative" id="notif-wrap">
+            <button class="btn btn-ghost btn-sm" style="padding:8px;position:relative" onclick="toggleNotifPanel()">
+              ${icon('bell')}
+              ${unreadCount > 0 ? `<span style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--danger);color:white;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid white">${unreadCount}</span>` : ''}
+            </button>
+          </div>
+          <div style="position:relative" id="user-menu-wrap">
+            <div class="nav-user-pill" onclick="toggleUserMenu()">
+              <div class="nav-avatar">${currentUser.avatar || getInitials(currentUser.name)}</div>
+              <span style="font-size:13px;font-weight:500">${currentUser.name.split(' ')[0]}</span>
+              <span style="font-size:11px;color:var(--gray-400)">${icon('chevron_down', '')}</span>
+            </div>
+            <div class="nav-dropdown animate-slide" id="user-dropdown" style="display:none">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--gray-100)">
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">${currentUser.name}</div>
+                <div style="font-size:12px;color:var(--gray-400)">${currentUser.email}</div>
+                <span class="badge badge-gold mt-1" style="font-size:10px">${currentUser.role.toUpperCase()}</span>
+              </div>
+              <button class="nav-dropdown-item" onclick="setPage('profile');">${icon('user')} My Profile</button>
+              <button class="nav-dropdown-item" onclick="setPage('notifications');">${icon('bell')} Notifications</button>
+              ${currentUser.role === 'admin' ? `<button class="nav-dropdown-item" onclick="setPage('admin');">${icon('settings')} Admin Panel</button>` : ''}
+              <div class="nav-dropdown-sep"></div>
+              <button class="nav-dropdown-item danger" onclick="logout();">${icon('logout')} Sign Out</button>
+            </div>
+          </div>
+        ` : `
+          <button class="btn btn-ghost btn-sm" onclick="setPage('login')">Sign In</button>
+          <button class="btn btn-primary btn-sm" onclick="setPage('register')">Apply Now</button>
+        `}
+      </div>
+    </div>
+  </nav>`;
+}
+
+function toggleUserMenu() {
+  const d = document.getElementById('user-dropdown');
+  if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleNotifPanel() {
+  setPage('notifications');
+}
+
+// ═══════════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════════
+function renderSidebar() {
+  if (!currentUser) return '';
+  const isAdmin = currentUser.role === 'admin';
+  const apps = (DB.get('applications') || []).filter(a => isAdmin || a.userId === currentUser.id);
+  const pending = apps.filter(a => ['submitted','scrutiny','police_verification'].includes(a.status)).length;
+
+  const items = isAdmin ? [
+    { page: 'admin', icon: 'home', label: 'Overview' },
+    { page: 'admin_apps', icon: 'file', label: 'All Applications', badge: pending > 0 ? pending : null },
+    { page: 'admin_users', icon: 'users', label: 'Users' },
+    { page: 'analytics', icon: 'chart', label: 'Analytics' },
+  ] : [
+    { page: 'dashboard', icon: 'home', label: 'Dashboard' },
+    { page: 'new_app', icon: 'plus', label: 'New Application' },
+    { page: 'my_apps', icon: 'file', label: 'My Applications', badge: apps.length > 0 ? apps.length : null },
+    { page: 'track', icon: 'clock', label: 'Track Status' },
+    { page: 'appointments', icon: 'calendar', label: 'Appointments' },
+    { page: 'notifications', icon: 'bell', label: 'Notifications', badge: (DB.get('notifications')||[]).filter(n=>n.userId===currentUser.id&&!n.read).length || null },
+  ];
+
+  return `<aside class="sidebar">
+    <div style="padding:0 16px 16px;margin-bottom:8px;border-bottom:1px solid var(--gray-100)">
+      <div style="font-size:11px;color:var(--gray-400);margin-bottom:2px">Logged in as</div>
+      <div style="font-size:13px;font-weight:600;color:var(--navy)">${currentUser.name}</div>
+    </div>
+    <div class="sidebar-section-title mt-3">MAIN MENU</div>
+    ${items.map(i => `
+      <button class="sidebar-item ${currentPage === i.page ? 'active' : ''}" onclick="setPage('${i.page}')">
+        ${icon(i.icon)} ${i.label}
+        ${i.badge ? `<span class="sidebar-badge">${i.badge}</span>` : ''}
+      </button>
+    `).join('')}
+    <div class="sidebar-sep"></div>
+    <div class="sidebar-section-title">ACCOUNT</div>
+    <button class="sidebar-item ${currentPage === 'profile' ? 'active' : ''}" onclick="setPage('profile')">${icon('user')} My Profile</button>
+    <button class="sidebar-item" onclick="logout()" style="margin-top:auto">${icon('logout')} Sign Out</button>
+  </aside>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAGES
+// ═══════════════════════════════════════════════════════
+
+// ── LANDING PAGE ──
+function pageLanding() {
+  const services = [
+    { icon: 'passport', title: 'Fresh Passport', desc: 'Apply for your first-ever Indian passport. Complete online process with appointment booking.' },
+    { icon: 'refresh', title: 'Renewal', desc: 'Renew your existing passport before or after expiry. Upload old passport details.' },
+    { icon: 'clock', title: 'Tatkal Service', desc: 'Urgent travel? Get your passport in 1–3 working days under the Tatkal scheme.' },
+    { icon: 'edit', title: 'Change of Details', desc: 'Update address, name, date of birth, or other personal information on your passport.' },
+    { icon: 'eye', title: 'Track Application', desc: 'Real-time tracking of your passport application status at every stage.' },
+    { icon: 'calendar', title: 'Book Appointment', desc: 'Schedule and manage your Passport Seva Kendra appointment online.' },
+  ];
+
+  const notices = [
+    { type: 'new', title: 'Online appointment booking extended to all districts', date: '05 Dec 2024' },
+    { type: 'imp', title: 'Mandatory Aadhaar linking for all new applications from Jan 2025', date: '01 Dec 2024' },
+    { type: 'gen', title: 'NPDPS mobile app now available on Play Store and App Store', date: '28 Nov 2024' },
+    { type: 'new', title: 'New Passport Seva Kendra inaugurated in Patna', date: '20 Nov 2024' },
+    { type: 'imp', title: 'System maintenance scheduled for Dec 15, 2024 (2–5 AM)', date: '18 Nov 2024' },
+  ];
+
+  const faqs = [
+    { q: 'How long does it take to get a passport?', a: 'Normal applications take 7-21 working days. Tatkal applications are processed in 1-3 working days after appointment.' },
+    { q: 'What documents are required for a fresh passport?', a: 'You need proof of identity (Aadhaar/PAN/Voter ID), proof of address, date of birth certificate, and recent passport-size photographs.' },
+    { q: 'Can I track my application status online?', a: 'Yes. Use the Track Status feature on this portal with your application reference number or registered mobile number.' },
+    { q: 'Is Aadhaar mandatory for passport application?', a: 'While Aadhaar is not strictly mandatory, it is the preferred and fastest proof of identity and address.' },
+    { q: 'How do I reschedule my appointment?', a: 'You can reschedule your appointment up to 2 times from your dashboard. The slot will be released immediately upon cancellation.' },
+  ];
+
+  const stripItems = ['Ministry of External Affairs', 'Government of India', 'Passport Seva Programme', 'DigiSeva Initiative 2024', 'Secure Digital Identity'];
+
+  return `
+  ${renderGovtBanner()}
+  ${renderNavbar()}
+
+  <section class="landing-hero">
+    <div style="max-width:720px;margin:0 auto">
+      <div class="badge badge-gold mb-4" style="font-size:12px">🇮🇳 Official Government Portal</div>
+      <h1 class="landing-hero-title">Your Passport. <br><span class="accent">Simplified.</span></h1>
+      <p class="landing-hero-subtitle">Apply, track, and manage your Indian passport online — end to end. Secure, fast, and government-grade.</p>
+      <div class="landing-hero-actions">
+        <button class="btn btn-gold btn-lg" onclick="setPage('register')">Apply for Passport ${icon('arrow_right')}</button>
+        <button class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.4);color:white" onclick="setPage('track')">Track Application</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap">
+        ${[['2.4M+','Applications Processed'],['98.7%','Uptime'],['47','Passport Seva Kendras'],['3 Days','Tatkal Processing']].map(([v,l]) => `
+          <div style="text-align:center">
+            <div style="font-family:var(--font-serif);font-size:24px;font-weight:600;color:var(--gold-light)">${v}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.04em">${l}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </section>
+
+  <div class="landing-strip">
+    <div class="landing-strip-inner">
+      ${[...stripItems,...stripItems].map(s => `<span class="landing-strip-item">${icon('india')} ${s}</span>`).join('')}
+    </div>
+  </div>
+
+  <section class="landing-services">
+    <div style="text-align:center;margin-bottom:40px">
+      <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Our Services</div>
+      <h2 style="font-family:var(--font-serif);font-size:34px;font-weight:600;color:var(--navy)">Everything you need, online</h2>
+    </div>
+    <div class="grid-3" style="gap:20px">
+      ${services.map(s => `
+        <div class="service-card" onclick="currentUser ? setPage('new_app') : setPage('login')">
+          <div class="service-icon">${icon(s.icon)}</div>
+          <div class="service-title">${s.title}</div>
+          <div class="service-desc">${s.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+  </section>
+
+  <section class="landing-notices">
+    <div style="max-width:900px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h2 style="font-family:var(--font-serif);font-size:26px;font-weight:600;color:var(--navy)">Notices & Updates</h2>
+        <span class="badge badge-info">Live</span>
+      </div>
+      ${notices.map(n => `
+        <div class="notice-item">
+          <span class="notice-dot ${n.type}"></span>
+          <div style="flex:1">
+            <div class="notice-title">${n.title}</div>
+            <div class="notice-meta">${n.date}</div>
+          </div>
+          <span class="badge ${n.type==='new'?'badge-danger':n.type==='imp'?'badge-warning':'badge-success'}" style="font-size:10px">${n.type==='new'?'NEW':n.type==='imp'?'IMPORTANT':'INFO'}</span>
+        </div>
+      `).join('')}
+    </div>
+  </section>
+
+  <section style="padding:64px 24px;max-width:800px;margin:0 auto">
+    <h2 style="font-family:var(--font-serif);font-size:26px;font-weight:600;color:var(--navy);margin-bottom:24px">Frequently Asked Questions</h2>
+    ${faqs.map((f, i) => `
+      <div class="faq-item" id="faq-${i}">
+        <button class="faq-question" onclick="toggleFaq(${i})">
+          ${f.q}
+          <span class="faq-chevron">${icon('chevron_down')}</span>
+        </button>
+        <div class="faq-answer" id="faq-ans-${i}" style="display:none">${f.a}</div>
+      </div>
+    `).join('')}
+  </section>
+
+  <footer class="landing-footer">
+    <div style="max-width:1100px;margin:0 auto">
+      <div class="footer-logo">NPDPS</div>
+      <p style="margin-bottom:16px;max-width:500px">National Passport Digital Processing System — A Ministry of External Affairs, Government of India initiative.</p>
+      <div class="footer-links">
+        ${['About','Privacy Policy','Terms of Use','Accessibility','Help & Support','Contact Us','RTI','Disclaimer'].map(l => `<a href="#">${l}</a>`).join('')}
+      </div>
+      <div class="footer-sep"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div class="footer-copy">© 2024 Ministry of External Affairs, Government of India. All rights reserved.</div>
+        <div style="display:flex;gap:12px;font-size:12px">
+          <span>Visitors: 2,48,36,941</span>
+          <span>Last Updated: 05 Dec 2024</span>
+        </div>
+      </div>
+      <div class="footer-disclaimer">This is a simulated educational project. Not affiliated with the actual Government of India.</div>
+    </div>
+  </footer>
+  `;
+}
+
+function toggleFaq(i) {
+  const item = document.getElementById('faq-' + i);
+  const ans = document.getElementById('faq-ans-' + i);
+  if (!item || !ans) return;
+  const open = item.classList.contains('open');
+  item.classList.toggle('open', !open);
+  ans.style.display = open ? 'none' : 'block';
+}
+
+// ── LOGIN PAGE ──
+function pageLogin() {
+  return `
+  ${renderGovtBanner()}
+  ${renderNavbar()}
+  <div class="auth-page">
+    <div class="auth-left">
+      <div>
+        <div class="badge badge-gold mb-4" style="font-size:11px">SECURE PORTAL</div>
+        <h2 class="auth-left-title">Sign in to your<br>Passport Account</h2>
+        <p class="auth-left-sub">Access your application dashboard, track status, and manage your passport journey securely.</p>
+        <div class="auth-features">
+          ${['256-bit SSL encryption','Multi-factor authentication','Aadhaar-linked verification','End-to-end data protection'].map(f => `
+            <div class="auth-feature"><span class="auth-feature-dot"></span><span class="auth-feature-text">${f}</span></div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card animate-fade">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+          <div class="logo-emblem"><svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M8 18h8M8 15h8"/></svg></div>
+          <div><div class="logo-name" style="font-size:18px;color:var(--navy);font-family:var(--font-serif)">NPDPS Portal</div></div>
+        </div>
+        <h2 class="auth-title">Welcome back</h2>
+        <p class="auth-sub">Sign in with your registered credentials</p>
+
+        <div id="login-alert"></div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="required">*</span></label>
+          <input class="form-input" id="login-email" type="email" placeholder="you@example.com" value="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="required">*</span></label>
+          <div style="position:relative">
+            <input class="form-input" id="login-pwd" type="password" placeholder="Enter your password" style="padding-right:44px">
+            <button onclick="togglePwd('login-pwd')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-400);padding:4px">${icon('eye')}</button>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+            <input type="checkbox" id="remember"> Remember me
+          </label>
+          <a class="auth-link" style="font-size:13px" onclick="setPage('forgot')">Forgot password?</a>
+        </div>
+        <button class="btn btn-primary w-full" style="justify-content:center" onclick="doLogin()">Sign In ${icon('arrow_right')}</button>
+        <div class="auth-divider"><span>or</span></div>
+        <p style="text-align:center;font-size:13px;color:var(--gray-400)">Don't have an account? <a class="auth-link" onclick="setPage('register')">Register here</a></p>
+        <div style="margin-top:24px;padding:14px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-100)">
+          <p style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px">Demo Credentials</p>
+          <p style="font-size:12px;color:var(--gray-400)">User: rajesh@example.com / user123</p>
+          <p style="font-size:12px;color:var(--gray-400)">Admin: admin@npdps.gov.in / admin123</p>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function togglePwd(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email')?.value.trim();
+  const pwd = document.getElementById('login-pwd')?.value;
+  const alertEl = document.getElementById('login-alert');
+  if (!email || !pwd) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Please enter your email and password.</div>`;
+    return;
+  }
+  const users = DB.get('users') || [];
+  const user = users.find(u => u.email === email && u.password === pwd);
+  if (!user) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Invalid credentials. Please try again.</div>`;
+    return;
+  }
+  login(user);
+  toast('Welcome back, ' + user.name.split(' ')[0] + '!', 'success');
+  setPage(user.role === 'admin' ? 'admin' : 'dashboard');
+}
+
+// ── REGISTER PAGE ──
+function pageRegister() {
+  return `
+  ${renderGovtBanner()}
+  ${renderNavbar()}
+  <div class="auth-page">
+    <div class="auth-left">
+      <div>
+        <div class="badge badge-gold mb-4">CITIZEN PORTAL</div>
+        <h2 class="auth-left-title">Create your<br>Digital Passport ID</h2>
+        <p class="auth-left-sub">Your secure gateway to hassle-free passport services. Register once, apply anytime.</p>
+        <div class="auth-features">
+          ${['Free to register','Instant OTP verification','Aadhaar-linked account','24×7 application tracking'].map(f => `
+            <div class="auth-feature"><span class="auth-feature-dot"></span><span class="auth-feature-text">${f}</span></div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card animate-fade" id="reg-step1">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-sub">Fill in your details to get started</p>
+        <div id="reg-alert"></div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">First Name <span class="required">*</span></label>
+            <input class="form-input" id="reg-fname" placeholder="First name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name <span class="required">*</span></label>
+            <input class="form-input" id="reg-lname" placeholder="Last name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address <span class="required">*</span></label>
+          <input class="form-input" id="reg-email" type="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number <span class="required">*</span></label>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" value="+91" style="width:60px;flex-shrink:0" readonly>
+            <input class="form-input" id="reg-phone" type="tel" maxlength="10" placeholder="10-digit mobile number">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password <span class="required">*</span></label>
+          <input class="form-input" id="reg-pwd" type="password" placeholder="Minimum 8 characters">
+          <p class="form-helper">Must include uppercase, lowercase, and a number</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password <span class="required">*</span></label>
+          <input class="form-input" id="reg-pwd2" type="password" placeholder="Re-enter password">
+        </div>
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;cursor:pointer;margin-bottom:20px">
+          <input type="checkbox" id="reg-agree" style="margin-top:2px"> I agree to the <a class="auth-link" style="margin:0 4px">Terms of Use</a> and <a class="auth-link">Privacy Policy</a>
+        </label>
+        <button class="btn btn-primary w-full" style="justify-content:center" onclick="doRegister()">Create Account & Verify OTP ${icon('arrow_right')}</button>
+        <p style="text-align:center;font-size:13px;color:var(--gray-400);margin-top:16px">Already registered? <a class="auth-link" onclick="setPage('login')">Sign in</a></p>
+      </div>
+      <div class="auth-card animate-fade" id="reg-step2" style="display:none">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="width:56px;height:56px;background:var(--success-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--success)">${icon('mail')}</div>
+          <h2 class="auth-title">Verify Your Email</h2>
+          <p class="auth-sub">We've sent a 6-digit OTP to <strong id="otp-email-show"></strong></p>
+        </div>
+        <div id="otp-alert"></div>
+        <div class="form-group">
+          <label class="form-label" style="text-align:center;display:block">Enter OTP</label>
+          <div class="otp-inputs" style="justify-content:center">
+            ${[0,1,2,3,4,5].map(i => `<input class="otp-input" id="otp-${i}" maxlength="1" type="text" inputmode="numeric" onkeyup="otpKeyup(event,${i})">`).join('')}
+          </div>
+        </div>
+        <button class="btn btn-primary w-full mt-4" style="justify-content:center" onclick="verifyOtp()">Verify & Continue ${icon('arrow_right')}</button>
+        <p style="text-align:center;font-size:13px;color:var(--gray-400);margin-top:16px">Didn't receive? <a class="auth-link" onclick="toast('OTP resent!','success')">Resend OTP</a></p>
+      </div>
+    </div>
+  </div>`;
+}
+
+let pendingRegUser = null;
+
+function doRegister() {
+  const fname = document.getElementById('reg-fname')?.value.trim();
+  const lname = document.getElementById('reg-lname')?.value.trim();
+  const email = document.getElementById('reg-email')?.value.trim();
+  const phone = document.getElementById('reg-phone')?.value.trim();
+  const pwd = document.getElementById('reg-pwd')?.value;
+  const pwd2 = document.getElementById('reg-pwd2')?.value;
+  const agree = document.getElementById('reg-agree')?.checked;
+  const alertEl = document.getElementById('reg-alert');
+
+  if (!fname || !lname || !email || !phone || !pwd) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Please fill all required fields.</div>`; return;
+  }
+  if (phone.length !== 10) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Please enter a valid 10-digit mobile number.</div>`; return;
+  }
+  if (pwd !== pwd2) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Passwords do not match.</div>`; return;
+  }
+  if (pwd.length < 8) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Password must be at least 8 characters.</div>`; return;
+  }
+  if (!agree) {
+    alertEl.innerHTML = `<div class="alert alert-danger">Please agree to the terms to continue.</div>`; return;
+  }
+  const users = DB.get('users') || [];
+  if (users.find(u => u.email === email)) {
+    alertEl.innerHTML = `<div class="alert alert-danger">An account with this email already exists.</div>`; return;
+  }
+  const name = fname + ' ' + lname;
+  pendingRegUser = { id: uid(), name, email, phone, password: pwd, role: 'user', avatar: getInitials(name), verified: false, createdAt: new Date().toISOString() };
+  document.getElementById('reg-step1').style.display = 'none';
+  document.getElementById('reg-step2').style.display = 'block';
+  document.getElementById('otp-email-show').textContent = email;
+  toast('OTP sent to ' + email, 'success');
+  setTimeout(() => { const el = document.getElementById('otp-0'); if (el) el.focus(); }, 100);
+}
+
+function otpKeyup(e, i) {
+  const el = document.getElementById('otp-' + i);
+  if (el?.value && i < 5) document.getElementById('otp-' + (i + 1))?.focus();
+  if (e.key === 'Backspace' && !el?.value && i > 0) document.getElementById('otp-' + (i - 1))?.focus();
+}
+
+function verifyOtp() {
+  const otp = [0,1,2,3,4,5].map(i => document.getElementById('otp-' + i)?.value || '').join('');
+  if (otp.length < 6) {
+    document.getElementById('otp-alert').innerHTML = `<div class="alert alert-danger">Please enter the 6-digit OTP.</div>`; return;
+  }
+  // Accept any 6-digit OTP in demo
+  const users = DB.get('users') || [];
+  pendingRegUser.verified = true;
+  users.push(pendingRegUser);
+  DB.set('users', users);
+  login(pendingRegUser);
+  toast('Account created successfully!', 'success');
+  setPage('dashboard');
+}
+
+// ── FORGOT PASSWORD ──
+function pageForgot() {
+  return `
+  ${renderGovtBanner()}
+  ${renderNavbar()}
+  <div style="display:flex;align-items:center;justify-content:center;min-height:80vh;padding:24px">
+    <div class="card p-8 animate-fade" style="max-width:420px;width:100%">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="width:56px;height:56px;background:var(--warning-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--warning)">${icon('lock')}</div>
+        <h2 class="auth-title">Reset Password</h2>
+        <p class="auth-sub">Enter your registered email to receive a reset link.</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address <span class="required">*</span></label>
+        <input class="form-input" id="forgot-email" type="email" placeholder="your@email.com">
+      </div>
+      <button class="btn btn-primary w-full mt-2" style="justify-content:center" onclick="doForgot()">Send Reset Link ${icon('mail')}</button>
+      <p style="text-align:center;font-size:13px;color:var(--gray-400);margin-top:16px"><a class="auth-link" onclick="setPage('login')">← Back to Sign In</a></p>
+    </div>
+  </div>`;
+}
+
+function doForgot() {
+  const email = document.getElementById('forgot-email')?.value.trim();
+  if (!email) { toast('Please enter your email address', 'danger'); return; }
+  toast('Password reset link sent to ' + email, 'success');
+  setTimeout(() => setPage('login'), 1500);
+}
+
+// ── DASHBOARD ──
+function pageDashboard() {
+  const apps = (DB.get('applications') || []).filter(a => a.userId === currentUser.id);
+  const activeApp = apps.find(a => !['approved','rejected','dispatched'].includes(a.status));
+  const notifs = (DB.get('notifications') || []).filter(n => n.userId === currentUser.id && !n.read);
+  const completionFields = ['name','email','phone','dob'];
+  const filled = completionFields.filter(f => currentUser[f]).length;
+  const pct = Math.round((filled / completionFields.length) * 100);
+  const circumference = 2 * Math.PI * 30;
+  const offset = circumference - (pct / 100) * circumference;
+
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div>
+          <h1 class="page-title">Good morning, ${currentUser.name.split(' ')[0]} 👋</h1>
+          <p class="page-subtitle">Here's your passport application summary</p>
+        </div>
+        <button class="btn btn-primary" onclick="setPage('new_app')">${icon('plus')} New Application</button>
+      </div>
+
+      <!-- Profile completion -->
+      ${pct < 100 ? `
+      <div class="card p-4 mb-6 flex items-center gap-4" style="border-left:3px solid var(--gold)">
+        <div class="profile-complete-ring">
+          <svg viewBox="0 0 80 80" width="80" height="80">
+            <circle class="ring-track" cx="40" cy="40" r="30"/>
+            <circle class="ring-fill" cx="40" cy="40" r="30" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="ring-pct">${pct}%</div>
+        </div>
+        <div style="flex:1">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:4px">Complete your profile</div>
+          <div style="font-size:13px;color:var(--gray-400);margin-bottom:10px">A complete profile helps process your application faster.</div>
+          <button class="btn btn-gold btn-sm" onclick="setPage('profile')">Complete Profile</button>
+        </div>
+      </div>` : ''}
+
+      <!-- Stats -->
+      <div class="grid-4 mb-6">
+        <div class="stat-card navy">
+          <div class="stat-icon" style="background:var(--navy)">${icon('file')}</div>
+          <div class="stat-label">Total Applications</div>
+          <div class="stat-value">${apps.length}</div>
+          <div class="stat-change">All time</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-icon" style="background:var(--gold)">${icon('clock')}</div>
+          <div class="stat-label">In Progress</div>
+          <div class="stat-value">${apps.filter(a => ['submitted','scrutiny','police_verification'].includes(a.status)).length}</div>
+          <div class="stat-change">Active applications</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-icon" style="background:var(--success)">${icon('check')}</div>
+          <div class="stat-label">Approved</div>
+          <div class="stat-value">${apps.filter(a => ['approved','dispatched'].includes(a.status)).length}</div>
+          <div class="stat-change up">↑ Ready for dispatch</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-icon" style="background:var(--danger)">${icon('bell')}</div>
+          <div class="stat-label">Notifications</div>
+          <div class="stat-value">${notifs.length}</div>
+          <div class="stat-change ${notifs.length > 0 ? 'down' : ''}">Unread alerts</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <!-- Active Application -->
+        <div class="card p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 style="font-size:16px;font-weight:600;color:var(--navy)">Active Application</h3>
+            ${activeApp ? `<span class="app-id">${activeApp.id}</span>` : ''}
+          </div>
+          ${activeApp ? `
+            <div class="flex items-center justify-between mb-3">
+              <span style="font-size:14px;color:var(--gray-600)">Type</span>
+              <span class="badge badge-info">${activeApp.type === 'fresh' ? 'Fresh Passport' : activeApp.type === 'renew' ? 'Renewal' : 'Change of Details'}</span>
+            </div>
+            <div class="flex items-center justify-between mb-3">
+              <span style="font-size:14px;color:var(--gray-600)">Status</span>
+              ${statusBadge(activeApp.status)}
+            </div>
+            <div class="flex items-center justify-between mb-4">
+              <span style="font-size:14px;color:var(--gray-600)">Submitted</span>
+              <span style="font-size:14px;font-weight:500">${fmtDate(activeApp.submittedAt)}</span>
+            </div>
+            <div class="timeline mt-4">
+              ${activeApp.timeline.map(t => `
+                <div class="timeline-item">
+                  <span class="timeline-dot ${t.done ? 'done' : t.active ? 'active' : 'pending'}"></span>
+                  <div class="timeline-label">${t.label}</div>
+                  <div class="timeline-sub">${t.date || 'Pending'}</div>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn-ghost btn-sm w-full mt-4" style="justify-content:center" onclick="setPage('track')">View Full Details ${icon('arrow_right')}</button>
+          ` : `
+            <div style="text-align:center;padding:32px 0;color:var(--gray-400)">
+              ${icon('file')}
+              <p style="margin-top:12px;font-size:14px">No active application</p>
+              <button class="btn btn-primary btn-sm mt-3" onclick="setPage('new_app')">Apply Now</button>
+            </div>
+          `}
+        </div>
+
+        <!-- Notifications & Appointments -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card" style="overflow:hidden">
+            <div class="flex items-center justify-between p-4 border-b">
+              <h3 style="font-size:16px;font-weight:600;color:var(--navy)">Recent Notifications</h3>
+              <button class="btn btn-ghost btn-sm" onclick="setPage('notifications')">View all</button>
+            </div>
+            ${(DB.get('notifications')||[]).filter(n=>n.userId===currentUser.id).slice(0,3).map(n => `
+              <div class="notif-item ${n.read ? '' : 'unread'}">
+                <span class="notif-dot ${n.read ? 'read' : ''}"></span>
+                <div>
+                  <div class="notif-title">${n.title}</div>
+                  <div class="notif-body">${n.body}</div>
+                  <div class="notif-time">${n.time}</div>
+                </div>
+              </div>
+            `).join('') || '<div class="p-4 text-center text-muted" style="font-size:14px">No notifications</div>'}
+          </div>
+
+          <div class="card p-4">
+            <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:12px">Upcoming Appointment</h3>
+            ${activeApp?.appointmentDate ? `
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--info-bg);border-radius:var(--radius);border:1px solid rgba(26,74,122,.1)">
+                <div style="color:var(--info);flex-shrink:0">${icon('calendar')}</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--navy)">${fmtDate(activeApp.appointmentDate)} at ${activeApp.appointmentTime}</div>
+                  <div style="font-size:12px;color:var(--gray-400)">${activeApp.center}</div>
+                </div>
+              </div>
+              <p style="font-size:12px;color:var(--gray-400);margin-top:8px">Please arrive 15 minutes early with all original documents.</p>
+            ` : `<p style="font-size:14px;color:var(--gray-400)">No appointments scheduled.</p>`}
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+// ── NEW APPLICATION (MULTI-STEP) ──
+let appStep = 1;
+const totalSteps = 5;
+let formData = { ...appDraft };
+
+function pageNewApp() {
+  const steps = ['Personal Details', 'Address', 'Police Verification', 'Emergency Contact', 'Documents & Review'];
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header">
+        <h1 class="page-title">New Passport Application</h1>
+        <p class="page-subtitle">Complete all steps. Draft is auto-saved.</p>
+      </div>
+
+      <div class="card p-6">
+        <div class="step-header" id="step-header">
+          ${steps.map((s, i) => `
+            <div class="step-item ${appStep > i + 1 ? 'done' : appStep === i + 1 ? 'active' : ''}">
+              <div class="step-circle">${appStep > i + 1 ? `<span style="font-size:13px">✓</span>` : i + 1}</div>
+              <div class="step-label">${s}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="progress-bar mb-6">
+          <div class="progress-fill" style="width:${(appStep / totalSteps) * 100}%"></div>
+        </div>
+
+        <div id="step-content">
+          ${renderAppStep()}
+        </div>
+
+        <div class="flex justify-between mt-6 pt-4 border-t">
+          <button class="btn btn-ghost" onclick="prevStep()" ${appStep === 1 ? 'disabled' : ''}>← Previous</button>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost" onclick="saveDraft()">Save Draft</button>
+            ${appStep < totalSteps ? `<button class="btn btn-primary" onclick="nextStep()">Continue →</button>` : `<button class="btn btn-gold" onclick="submitApplication()">Submit Application ${icon('check')}</button>`}
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+function renderAppStep() {
+  const fd = formData;
+  if (appStep === 1) return `
+    <h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:20px">Personal Information</h3>
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--info-bg);border-radius:var(--radius);border:1px solid rgba(26,74,122,.15);margin-bottom:20px;font-size:13px;color:var(--info)">
+      ${icon('shield')} Aadhaar auto-fill enabled. Verify details carefully before proceeding.
+    </div>
+    <div class="form-group">
+      <label class="form-label">Application Type <span class="required">*</span></label>
+      <select class="form-input form-select" id="f-type" onchange="fd('type',this.value)">
+        <option value="">-- Select --</option>
+        <option value="fresh" ${fd.type==='fresh'?'selected':''}>Fresh Passport</option>
+        <option value="renew" ${fd.type==='renew'?'selected':''}>Renewal</option>
+        <option value="change" ${fd.type==='change'?'selected':''}>Change of Details</option>
+        <option value="damage" ${fd.type==='damage'?'selected':''}>Damaged/Lost Passport</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Processing Type <span class="required">*</span></label>
+      <div style="display:flex;gap:12px">
+        ${[['normal','Normal (₹1,500)','7-21 working days'],['tatkal','Tatkal (₹3,500)','1-3 working days']].map(([v,l,d]) => `
+          <label style="flex:1;display:flex;align-items:flex-start;gap:10px;padding:14px;border:2px solid ${fd.category===v?'var(--navy)':'var(--gray-200)'};border-radius:var(--radius);cursor:pointer;transition:border-color .18s" onclick="fSet('category','${v}');document.querySelectorAll('.cat-lbl').forEach(el=>el.style.borderColor='var(--gray-200)');this.style.borderColor='var(--navy)'">
+            <input type="radio" name="category" value="${v}" ${fd.category===v?'checked':''} style="margin-top:2px;flex-shrink:0">
+            <div><div style="font-weight:500;font-size:14px">${l}</div><div style="font-size:12px;color:var(--gray-400)">${d}</div></div>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Full Name (as per Aadhaar) <span class="required">*</span></label>
+        <input class="form-input" id="f-fullname" value="${fd.fullName||currentUser.name}" oninput="fSet('fullName',this.value)" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of Birth <span class="required">*</span></label>
+        <input class="form-input" id="f-dob" type="date" value="${fd.dob||''}" oninput="fSet('dob',this.value)">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Gender <span class="required">*</span></label>
+        <select class="form-input form-select" onchange="fSet('gender',this.value)">
+          <option value="">-- Select --</option>
+          ${['Male','Female','Transgender'].map(g => `<option value="${g}" ${fd.gender===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Place of Birth <span class="required">*</span></label>
+        <input class="form-input" value="${fd.place_of_birth||''}" oninput="fSet('place_of_birth',this.value)" placeholder="City, State">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Father's Name <span class="required">*</span></label>
+        <input class="form-input" value="${fd.father_name||''}" oninput="fSet('father_name',this.value)" placeholder="Father's full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mother's Name <span class="required">*</span></label>
+        <input class="form-input" value="${fd.mother_name||''}" oninput="fSet('mother_name',this.value)" placeholder="Mother's full name">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Marital Status</label>
+        <select class="form-input form-select" onchange="fSet('marital_status',this.value)">
+          ${['Single','Married','Divorced','Widowed'].map(m => `<option ${fd.marital_status===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PAN Card Number</label>
+        <input class="form-input" value="${fd.pan||''}" oninput="fSet('pan',this.value)" placeholder="ABCDE1234F" maxlength="10" style="text-transform:uppercase">
+        <p class="form-helper">Optional but recommended for verification</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Mobile Number <span class="required">*</span></label>
+        <input class="form-input" value="${fd.phone||currentUser.phone||''}" oninput="fSet('phone',this.value)" placeholder="10-digit mobile" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address <span class="required">*</span></label>
+        <input class="form-input" type="email" value="${fd.email||currentUser.email}" oninput="fSet('email',this.value)">
+      </div>
+    </div>`;
+
+  if (appStep === 2) return `
+    <h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:20px">Address Information</h3>
+    <div style="font-size:13px;color:var(--gray-400);margin-bottom:20px">Note: Address must match with your proof of address document.</div>
+    <h4 style="font-size:14px;font-weight:600;color:var(--gray-600);margin-bottom:16px">Present Address</h4>
+    <div class="form-group">
+      <label class="form-label">House No. / Building / Flat <span class="required">*</span></label>
+      <input class="form-input" value="${fd.house||''}" oninput="fSet('house',this.value)" placeholder="e.g. 42, Sector 15, RWA Complex">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">District <span class="required">*</span></label>
+        <input class="form-input" value="${fd.district||''}" oninput="fSet('district',this.value)" placeholder="District">
+      </div>
+      <div class="form-group">
+        <label class="form-label">City / Town <span class="required">*</span></label>
+        <input class="form-input" value="${fd.city||''}" oninput="fSet('city',this.value)" placeholder="City">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">State / UT <span class="required">*</span></label>
+        <select class="form-input form-select" onchange="fSet('state',this.value)">
+          <option value="">-- Select State --</option>
+          ${['Andhra Pradesh','Assam','Bihar','Delhi','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal'].map(s => `<option ${fd.state===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">PIN Code <span class="required">*</span></label>
+        <input class="form-input" value="${fd.pin||''}" oninput="fSet('pin',this.value)" placeholder="6-digit PIN" maxlength="6">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Country</label>
+      <input class="form-input" value="India" readonly>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;margin-bottom:20px;padding:12px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-100)">
+      <input type="checkbox" id="perm-same" ${fd.perm_same?'checked':''} onchange="fSet('perm_same',this.checked)"> Permanent address same as present address
+    </label>
+    <h4 style="font-size:14px;font-weight:600;color:var(--gray-600);margin-bottom:16px">Passport Seva Kendra Selection</h4>
+    <div class="form-group">
+      <label class="form-label">Select PSK / POPSK <span class="required">*</span></label>
+      <select class="form-input form-select" onchange="fSet('center',this.value)">
+        <option value="">-- Select Center --</option>
+        ${['PSK Delhi (CP)','PSK Delhi (Saket)','PSK Gurugram','PSK Mumbai (Malad)','PSK Mumbai (Thane)','PSK Bengaluru','PSK Chennai','PSK Hyderabad','PSK Kolkata','PSK Pune','PSK Ahmedabad','PSK Jaipur'].map(c => `<option value="${c}" ${fd.center===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+      <p class="form-helper">You can change this before booking your appointment</p>
+    </div>`;
+
+  if (appStep === 3) return `
+    <h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:8px">Police Verification Details</h3>
+    <p style="font-size:13px;color:var(--gray-400);margin-bottom:20px">This information is used to initiate police verification at your address.</p>
+    <div class="alert alert-info">
+      ${icon('shield')} Police verification is conducted by the local police station at the address provided. Ensure accuracy.
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Police Station Name</label>
+        <input class="form-input" value="${fd.ps_name||''}" oninput="fSet('ps_name',this.value)" placeholder="Nearest police station">
+        <p class="form-helper">Name of police station in your jurisdiction</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Police District</label>
+        <input class="form-input" value="${fd.ps_district||''}" oninput="fSet('ps_district',this.value)" placeholder="Police district">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Duration at Current Address</label>
+      <select class="form-input form-select" onchange="fSet('addr_duration',this.value)">
+        <option value="">-- Select --</option>
+        ${['Less than 1 year','1-3 years','3-5 years','More than 5 years'].map(d => `<option ${fd.addr_duration===d?'selected':''}>${d}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Previous Address (if changed in last 1 year)</label>
+      <textarea class="form-input" oninput="fSet('prev_address',this.value)" placeholder="Enter previous address if you have moved in the last 1 year...">${fd.prev_address||''}</textarea>
+    </div>
+    <div style="padding:16px;background:var(--warning-bg);border-radius:var(--radius);border:1px solid rgba(122,82,0,.15)">
+      <p style="font-size:13px;font-weight:600;color:var(--warning);margin-bottom:8px">${icon('alert')} Important Declaration</p>
+      <p style="font-size:13px;color:var(--warning)">I declare that the above information is true and correct to the best of my knowledge and belief. I understand that providing false information is a criminal offence.</p>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-top:10px">
+        <input type="checkbox" id="pv-declare" ${fd.pv_declared?'checked':''} onchange="fSet('pv_declared',this.checked)">
+        I accept and declare the above statement.
+      </label>
+    </div>`;
+
+  if (appStep === 4) return `
+    <h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:20px">Emergency Contact</h3>
+    <p style="font-size:13px;color:var(--gray-400);margin-bottom:20px">Provide details of a person to be contacted in case of emergency.</p>
+    <div class="form-group">
+      <label class="form-label">Full Name <span class="required">*</span></label>
+      <input class="form-input" value="${fd.ec_name||''}" oninput="fSet('ec_name',this.value)" placeholder="Emergency contact's full name">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Relationship <span class="required">*</span></label>
+        <select class="form-input form-select" onchange="fSet('ec_relation',this.value)">
+          <option value="">-- Select --</option>
+          ${['Spouse','Father','Mother','Son','Daughter','Brother','Sister','Friend','Other'].map(r => `<option ${fd.ec_relation===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number <span class="required">*</span></label>
+        <input class="form-input" value="${fd.ec_phone||''}" oninput="fSet('ec_phone',this.value)" placeholder="10-digit mobile" maxlength="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Address <span class="required">*</span></label>
+      <textarea class="form-input" oninput="fSet('ec_address',this.value)" placeholder="Emergency contact's full address">${fd.ec_address||''}</textarea>
+    </div>
+    <div style="margin-top:24px;padding:20px;background:var(--gray-50);border-radius:var(--radius-lg);border:1px solid var(--gray-100)">
+      <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px">Reference (Optional)</h4>
+      <p style="font-size:13px;color:var(--gray-400);margin-bottom:12px">Provide a reference who can vouch for your identity (not a family member).</p>
+      <div class="grid-2">
+        <div class="form-group mb-0">
+          <label class="form-label">Name</label>
+          <input class="form-input" value="${fd.ref_name||''}" oninput="fSet('ref_name',this.value)" placeholder="Reference name">
+        </div>
+        <div class="form-group mb-0">
+          <label class="form-label">Phone</label>
+          <input class="form-input" value="${fd.ref_phone||''}" oninput="fSet('ref_phone',this.value)" placeholder="Reference phone">
+        </div>
+      </div>
+    </div>`;
+
+  if (appStep === 5) {
+    const docsRequired = [
+      { id: 'photo', label: 'Passport-size Photograph', note: 'Recent, white background, 3.5×4.5cm', required: true },
+      { id: 'aadhaar', label: 'Aadhaar Card', note: 'Both sides of Aadhaar', required: true },
+      { id: 'dob_proof', label: 'Date of Birth Proof', note: 'Birth certificate / Matriculation certificate', required: true },
+      { id: 'address_proof', label: 'Address Proof', note: 'Electricity bill / Rental agreement / Bank statement', required: true },
+      { id: 'old_passport', label: 'Old Passport (if renewing)', note: 'Required only for renewal/change', required: false },
+      { id: 'signature', label: 'Signature (White background)', note: 'Black ink on white paper, scanned', required: true },
+    ];
+
+    return `
+    <h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:8px">Documents & Final Review</h3>
+    <p style="font-size:13px;color:var(--gray-400);margin-bottom:20px">Upload required documents (max 2MB each, PDF/JPG/PNG).</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px">
+      ${docsRequired.map(d => `
+        <div style="padding:16px;border:1px solid var(--gray-200);border-radius:var(--radius);transition:border-color .18s" id="doc-${d.id}">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:13px;font-weight:500;color:var(--navy)">${d.label}</span>
+            ${d.required ? '<span style="font-size:11px;color:var(--danger)">Required</span>' : '<span style="font-size:11px;color:var(--gray-400)">Optional</span>'}
+          </div>
+          <p style="font-size:12px;color:var(--gray-400);margin-bottom:10px">${d.note}</p>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px;background:var(--gray-50);border-radius:var(--radius);border:1px dashed var(--gray-200);font-size:12px;color:var(--gray-600)" onclick="simulateUpload('${d.id}')">
+            ${icon('upload')} Upload ${d.label.split(' ')[0]}
+          </label>
+          <div id="doc-preview-${d.id}" style="display:none;margin-top:8px" class="upload-preview">
+            <span class="upload-preview-icon">${icon('file')}</span>
+            <span class="upload-preview-name" id="doc-name-${d.id}"></span>
+            <span class="upload-preview-remove" onclick="removeUpload('${d.id}')">×</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card p-6" style="border:1.5px solid var(--navy-light)">
+      <h4 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px">Application Summary</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:13px">
+        ${[
+          ['Full Name', fd.fullName || '—'],
+          ['Date of Birth', fd.dob || '—'],
+          ['Gender', fd.gender || '—'],
+          ['Application Type', fd.type || '—'],
+          ['Processing', fd.category || '—'],
+          ['Mobile', fd.phone || '—'],
+          ['Email', fd.email || '—'],
+          ['Center', fd.center || '—'],
+          ['Address', (fd.house ? fd.house + ', ' + fd.city : '—')],
+          ['State', fd.state || '—'],
+        ].map(([l, v]) => `<div><span style="color:var(--gray-400)">${l}:</span> <span style="font-weight:500">${v}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--warning-bg);border-radius:var(--radius);border:1px solid rgba(122,82,0,.15)">
+        <p style="font-size:13px;color:var(--warning)"><strong>Fee:</strong> ₹${fd.category==='tatkal'?'3,500':'1,500'} — Payable at PSK or online before appointment.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;padding:16px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200)">
+      <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="final-declare" style="margin-top:2px" ${fd.final_declared?'checked':''} onchange="fSet('final_declared',this.checked)">
+        I hereby declare that all information provided is true, correct and complete to the best of my knowledge. I understand that submission of false information may result in rejection of application and legal action.
+      </label>
+    </div>`;
+  }
+}
+
+function fSet(key, val) { formData[key] = val; saveDraft(); }
+
+function saveDraft() {
+  DB.set('draft', formData);
+  toast('Draft saved', 'default');
+}
+
+function nextStep() {
+  if (appStep < totalSteps) { appStep++; rerenderStep(); }
+}
+
+function prevStep() {
+  if (appStep > 1) { appStep--; rerenderStep(); }
+}
+
+function rerenderStep() {
+  const content = document.getElementById('step-content');
+  const header = document.getElementById('step-header');
+  if (content) content.innerHTML = renderAppStep();
+  if (header) {
+    const steps = ['Personal Details', 'Address', 'Police Verification', 'Emergency Contact', 'Documents & Review'];
+    header.innerHTML = steps.map((s, i) => `
+      <div class="step-item ${appStep > i + 1 ? 'done' : appStep === i + 1 ? 'active' : ''}">
+        <div class="step-circle">${appStep > i + 1 ? '<span style="font-size:13px">✓</span>' : i + 1}</div>
+        <div class="step-label">${s}</div>
+      </div>
+    `).join('');
+  }
+  const pb = document.querySelector('.progress-fill');
+  if (pb) pb.style.width = (appStep / totalSteps * 100) + '%';
+  const prev = document.querySelector('.btn-ghost');
+  if (prev) prev.disabled = appStep === 1;
+}
+
+function simulateUpload(docId) {
+  const fakeNames = { photo: 'photo.jpg', aadhaar: 'aadhaar.pdf', dob_proof: 'birth_certificate.pdf', address_proof: 'electricity_bill.pdf', old_passport: 'old_passport.pdf', signature: 'signature.jpg' };
+  const preview = document.getElementById('doc-preview-' + docId);
+  const nameEl = document.getElementById('doc-name-' + docId);
+  const box = document.getElementById('doc-' + docId);
+  if (preview) preview.style.display = 'flex';
+  if (nameEl) nameEl.textContent = fakeNames[docId] || docId + '.pdf';
+  if (box) box.style.borderColor = 'var(--success)';
+  if (!formData.docs) formData.docs = [];
+  if (!formData.docs.includes(docId)) formData.docs.push(docId);
+  toast('Document uploaded successfully', 'success');
+}
+
+function removeUpload(docId) {
+  const preview = document.getElementById('doc-preview-' + docId);
+  const box = document.getElementById('doc-' + docId);
+  if (preview) preview.style.display = 'none';
+  if (box) box.style.borderColor = 'var(--gray-200)';
+  if (formData.docs) formData.docs = formData.docs.filter(d => d !== docId);
+}
+
+function submitApplication() {
+  const declared = document.getElementById('final-declare')?.checked;
+  if (!declared) { toast('Please accept the declaration to submit.', 'danger'); return; }
+  const apps = DB.get('applications') || [];
+  const id = appId();
+  const now2 = new Date().toISOString();
+  const fraudScore = Math.floor(5 + Math.random() * 30);
+  const newApp = {
+    id, userId: currentUser.id, type: formData.type || 'fresh', category: formData.category || 'normal',
+    status: 'submitted',
+    submittedAt: now2, updatedAt: now2,
+    personal: { fullName: formData.fullName || currentUser.name, dob: formData.dob, gender: formData.gender, place_of_birth: formData.place_of_birth, mother_name: formData.mother_name, father_name: formData.father_name, marital_status: formData.marital_status, pan: formData.pan, phone: formData.phone || currentUser.phone, email: formData.email || currentUser.email, nationality: 'Indian' },
+    address: { house: formData.house, city: formData.city, state: formData.state, pin: formData.pin, district: formData.district, country: 'India', perm_same: formData.perm_same },
+    emergency: { name: formData.ec_name, relation: formData.ec_relation, phone: formData.ec_phone, address: formData.ec_address },
+    documents: formData.docs || [],
+    center: formData.center,
+    fraudScore,
+    timeline: [
+      { status: 'submitted', label: 'Application Submitted', date: new Date().toLocaleString('en-IN'), done: true, active: true },
+      { status: 'scrutiny', label: 'Document Scrutiny', date: null, done: false },
+      { status: 'police_verification', label: 'Police Verification', date: null, done: false },
+      { status: 'approved', label: 'Final Approval', date: null, done: false },
+      { status: 'dispatched', label: 'Passport Dispatched', date: null, done: false },
+    ],
+    notes: '',
+    fee: formData.category === 'tatkal' ? 3500 : 1500,
+  };
+  apps.push(newApp);
+  DB.set('applications', apps);
+
+  // Add notification
+  const notifs = DB.get('notifications') || [];
+  notifs.unshift({ id: 'n' + Date.now(), userId: currentUser.id, title: 'Application Submitted', body: `Your application ${id} has been submitted successfully. Reference ID: ${id}`, time: 'Just now', read: false, type: 'success' });
+  DB.set('notifications', notifs);
+
+  DB.set('draft', {});
+  formData = {};
+  appStep = 1;
+  toast('Application submitted successfully!', 'success');
+  setPage('my_apps');
+}
+
+// ── MY APPLICATIONS ──
+function pageMyApps() {
+  const apps = (DB.get('applications') || []).filter(a => a.userId === currentUser.id);
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div>
+          <h1 class="page-title">My Applications</h1>
+          <p class="page-subtitle">${apps.length} application${apps.length !== 1 ? 's' : ''} found</p>
+        </div>
+        <button class="btn btn-primary" onclick="setPage('new_app')">${icon('plus')} New Application</button>
+      </div>
+
+      ${apps.length === 0 ? `
+        <div class="card p-8 text-center" style="color:var(--gray-400)">
+          ${icon('file')}
+          <p style="margin-top:16px;font-size:16px;font-weight:500">No applications yet</p>
+          <p style="font-size:14px;margin-top:4px">Start your passport journey by applying online.</p>
+          <button class="btn btn-primary mt-4" onclick="setPage('new_app')">Apply Now</button>
+        </div>
+      ` : apps.map(a => `
+        <div class="card mb-4" style="overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--gray-100)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:40px;height:40px;background:var(--navy);border-radius:var(--radius);display:flex;align-items:center;justify-content:center">${icon('passport')}</div>
+              <div>
+                <div style="font-weight:600;color:var(--navy)">${a.personal?.fullName || a.userId}</div>
+                <div class="app-id">${a.id}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              ${statusBadge(a.status)}
+              <button class="btn btn-ghost btn-sm" onclick="viewApp('${a.id}')">View ${icon('arrow_right')}</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:16px 20px">
+            ${[
+              ['Type', a.type === 'fresh' ? 'Fresh Passport' : a.type === 'renew' ? 'Renewal' : 'Change of Details'],
+              ['Category', a.category === 'tatkal' ? '⚡ Tatkal' : '📋 Normal'],
+              ['Submitted', fmtDate(a.submittedAt)],
+              ['Fee', '₹' + (a.fee || 1500).toLocaleString()],
+            ].map(([l,v]) => `<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);margin-bottom:4px">${l}</div><div style="font-size:14px;font-weight:500;color:var(--navy)">${v}</div></div>`).join('')}
+          </div>
+          ${a.fraudScore > 50 ? `
+            <div style="padding:10px 20px;background:var(--danger-bg);border-top:1px solid rgba(139,26,26,.1)">
+              <span style="font-size:12px;color:var(--danger);display:flex;align-items:center;gap:6px">${icon('alert')} Fraud risk flag detected — Application under enhanced scrutiny</span>
+            </div>
+          ` : ''}
+        </div>
+      `).join('')}
+    </main>
+  </div>`;
+}
+
+let viewingApp = null;
+
+function viewApp(id) {
+  viewingApp = id;
+  setPage('view_app');
+}
+
+// ── VIEW APPLICATION ──
+function pageViewApp() {
+  const app = (DB.get('applications') || []).find(a => a.id === viewingApp);
+  if (!app) return `<div class="layout">${renderSidebar()}<main class="main-content"><div class="alert alert-danger">Application not found.</div></main></div>`;
+
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div>
+          <button class="btn btn-ghost btn-sm mb-2" onclick="setPage('my_apps')">← Back</button>
+          <h1 class="page-title">${app.id}</h1>
+          <p class="page-subtitle">Submitted on ${fmtDate(app.submittedAt)}</p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${statusBadge(app.status)}
+          <button class="btn btn-primary btn-sm" onclick="generateReceipt('${app.id}')">
+            ${icon('pdf')} Download Receipt
+          </button>
+        </div>
+      </div>
+
+      <!-- Fraud Detection -->
+      <div class="card p-4 mb-4">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:13px;font-weight:600;color:var(--navy)">AI Fraud Detection Score</span>
+          <span class="badge ${app.fraudScore < 30 ? 'badge-success' : app.fraudScore < 60 ? 'badge-warning' : 'badge-danger'}">${app.fraudScore < 30 ? 'Low Risk' : app.fraudScore < 60 ? 'Medium Risk' : 'High Risk'}</span>
+        </div>
+        <div class="fraud-meter">
+          <div class="fraud-fill" style="width:${app.fraudScore}%;background:${app.fraudScore < 30 ? 'var(--success)' : app.fraudScore < 60 ? 'var(--gold)' : 'var(--danger)'}"></div>
+        </div>
+        <p style="font-size:12px;color:var(--gray-400);margin-top:6px">Score: ${app.fraudScore}/100 — ${app.fraudScore < 30 ? 'All details verified and consistent.' : 'Minor discrepancies detected, manual review recommended.'}</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <!-- Timeline -->
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:20px">Application Timeline</h3>
+          <div class="timeline">
+            ${app.timeline.map(t => `
+              <div class="timeline-item">
+                <span class="timeline-dot ${t.done ? 'done' : t.active ? 'active' : 'pending'}"></span>
+                <div class="timeline-label">${t.label}</div>
+                <div class="timeline-sub">${t.date || 'Pending'}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Personal Details</h3>
+          ${Object.entries({
+            'Full Name': app.personal?.fullName,
+            'Date of Birth': app.personal?.dob,
+            'Gender': app.personal?.gender,
+            'Place of Birth': app.personal?.place_of_birth,
+            'Father\'s Name': app.personal?.father_name,
+            'Mother\'s Name': app.personal?.mother_name,
+            'Marital Status': app.personal?.marital_status,
+            'Mobile': app.personal?.phone,
+            'Email': app.personal?.email,
+            'Nationality': app.personal?.nationality,
+          }).map(([k, v]) => v ? `
+            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-50);font-size:13px">
+              <span style="color:var(--gray-400)">${k}</span>
+              <span style="font-weight:500">${v}</span>
+            </div>
+          ` : '').join('')}
+        </div>
+
+        <!-- Address & Documents -->
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Address & Appointment</h3>
+          <div style="font-size:13px;margin-bottom:16px">
+            <div style="font-weight:500;margin-bottom:4px">${app.address?.house || '—'}</div>
+            <div style="color:var(--gray-400)">${[app.address?.city, app.address?.district, app.address?.state, app.address?.pin].filter(Boolean).join(', ')}</div>
+          </div>
+          ${app.appointmentDate ? `
+            <div style="padding:12px;background:var(--info-bg);border-radius:var(--radius);border:1px solid rgba(26,74,122,.1)">
+              <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--info);margin-bottom:6px">Appointment</div>
+              <div style="font-size:14px;font-weight:500">${fmtDate(app.appointmentDate)} at ${app.appointmentTime}</div>
+              <div style="font-size:12px;color:var(--gray-400);margin-top:2px">${app.center}</div>
+            </div>
+          ` : `<button class="btn btn-primary btn-sm" onclick="setPage('appointments')">Book Appointment</button>`}
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Emergency Contact & Documents</h3>
+          ${app.emergency?.name ? `
+            <div style="padding:12px;background:var(--gray-50);border-radius:var(--radius);margin-bottom:16px">
+              <div style="font-weight:500;font-size:14px">${app.emergency.name}</div>
+              <div style="font-size:12px;color:var(--gray-400)">${app.emergency.relation} · ${app.emergency.phone}</div>
+            </div>
+          ` : ''}
+          <h4 style="font-size:13px;font-weight:600;color:var(--gray-600);margin-bottom:10px">Uploaded Documents</h4>
+          ${(app.documents || []).length > 0 ? app.documents.map(d => `
+            <div class="upload-preview">
+              <span class="upload-preview-icon">${icon('file')}</span>
+              <span class="upload-preview-name">${d}</span>
+              <span style="font-size:12px;color:var(--success)">✓ Verified</span>
+            </div>
+          `).join('') : '<p style="font-size:13px;color:var(--gray-400)">No documents uploaded.</p>'}
+          ${app.notes ? `<div class="alert alert-info mt-3" style="font-size:13px">${icon('shield')} Officer Note: ${app.notes}</div>` : ''}
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+function generateReceipt(appId) {
+  const app = (DB.get('applications') || []).find(a => a.id === appId);
+  if (!app) return;
+  const receipt = `
+NATIONAL PASSPORT DIGITAL PROCESSING SYSTEM
+Ministry of External Affairs, Government of India
+═══════════════════════════════════════════════
+
+APPLICATION RECEIPT / ACKNOWLEDGEMENT
+
+Application ID  : ${app.id}
+Applicant Name  : ${app.personal?.fullName || 'N/A'}
+Date of Birth   : ${app.personal?.dob || 'N/A'}
+Application Type: ${app.type?.toUpperCase() || 'N/A'}
+Category        : ${app.category?.toUpperCase() || 'N/A'}
+Status          : ${app.status?.toUpperCase().replace('_', ' ')}
+Fee Paid        : INR ${(app.fee || 1500).toLocaleString()}
+Submitted On    : ${new Date(app.submittedAt).toLocaleString('en-IN')}
+
+PSK / Center    : ${app.center || 'To be assigned'}
+Appointment     : ${app.appointmentDate ? app.appointmentDate + ' at ' + app.appointmentTime : 'Not scheduled'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This is an official receipt generated by NPDPS.
+Keep this for your records.
+Helpline: 1800-258-1800 | passportindia.gov.in
+═══════════════════════════════════════════════
+  `;
+  const blob = new Blob([receipt], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `NPDPS_Receipt_${appId}.txt`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('Receipt downloaded!', 'success');
+}
+
+// ── TRACK STATUS ──
+function pageTrack() {
+  const userApps = (DB.get('applications') || []).filter(a => a.userId === currentUser?.id);
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header">
+        <h1 class="page-title">Track Application Status</h1>
+        <p class="page-subtitle">Real-time status of your passport applications</p>
+      </div>
+
+      <div class="card p-6 mb-6">
+        <div style="display:flex;gap:12px">
+          <input class="form-input" id="track-id" placeholder="Enter Application ID (e.g. APP-2024-001847)" style="flex:1">
+          <button class="btn btn-primary" onclick="doTrack()">Track Now</button>
+        </div>
+      </div>
+
+      <div id="track-result"></div>
+
+      ${userApps.length > 0 ? `
+        <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Your Applications</h3>
+        ${userApps.map(a => `
+          <div class="card p-4 mb-3 flex items-center justify-between" style="cursor:pointer" onclick="document.getElementById('track-id').value='${a.id}';doTrack()">
+            <div>
+              <div class="font-mono text-sm" style="color:var(--navy)">${a.id}</div>
+              <div style="font-size:13px;color:var(--gray-400)">Submitted ${fmtDate(a.submittedAt)}</div>
+            </div>
+            ${statusBadge(a.status)}
+          </div>
+        `).join('')}
+      ` : ''}
+    </main>
+  </div>`;
+}
+
+function doTrack() {
+  const id = document.getElementById('track-id')?.value.trim();
+  const resultEl = document.getElementById('track-result');
+  if (!resultEl) return;
+  if (!id) { resultEl.innerHTML = `<div class="alert alert-danger">Please enter an application ID.</div>`; return; }
+  const app = (DB.get('applications') || []).find(a => a.id === id);
+  if (!app) {
+    resultEl.innerHTML = `<div class="alert alert-danger">No application found with ID: <strong>${id}</strong></div>`; return;
+  }
+  resultEl.innerHTML = `
+    <div class="card p-6 mb-6 animate-fade">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <h3 style="font-size:18px;font-weight:600;color:var(--navy)">${app.personal?.fullName || 'Applicant'}</h3>
+          <div class="app-id">${app.id}</div>
+        </div>
+        ${statusBadge(app.status)}
+      </div>
+      <div class="timeline">
+        ${app.timeline.map(t => `
+          <div class="timeline-item">
+            <span class="timeline-dot ${t.done ? 'done' : t.active ? 'active' : 'pending'}"></span>
+            <div class="timeline-label">${t.label}</div>
+            <div class="timeline-sub">${t.date || 'Pending'}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="display:flex;gap:12px;margin-top:16px">
+        <button class="btn btn-primary btn-sm" onclick="viewApp('${app.id}')">Full Details</button>
+        <button class="btn btn-ghost btn-sm" onclick="generateReceipt('${app.id}')">${icon('pdf')} Download Receipt</button>
+      </div>
+    </div>`;
+}
+
+// ── APPOINTMENTS ──
+let selectedDate = null, selectedTime = null;
+
+function pageAppointments() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const bookedSlots = DB.get('slots') || [];
+
+  const timeSlots = ['09:00 AM','09:30 AM','10:00 AM','10:30 AM','11:00 AM','11:30 AM','02:00 PM','02:30 PM','03:00 PM','03:30 PM','04:00 PM'];
+
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header">
+        <h1 class="page-title">Appointment Booking</h1>
+        <p class="page-subtitle">Schedule your Passport Seva Kendra visit</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="card p-6">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <h3 style="font-size:16px;font-weight:600;color:var(--navy)">${monthNames[month]} ${year}</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" style="padding:6px">&larr;</button>
+              <button class="btn btn-ghost btn-sm" style="padding:6px">&rarr;</button>
+            </div>
+          </div>
+          <div class="calendar-grid">
+            ${days.map(d => `<div class="cal-day-header">${d}</div>`).join('')}
+            ${Array(firstDay).fill(0).map(() => `<div class="cal-day empty"></div>`).join('')}
+            ${Array.from({length: daysInMonth}, (_, i) => {
+              const d = i + 1;
+              const isPast = d < today.getDate();
+              const isToday = d === today.getDate();
+              const isSelected = selectedDate === `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+              const isWeekend = new Date(year, month, d).getDay() === 0;
+              return `<div class="cal-day ${isPast || isWeekend ? 'past' : isSelected ? 'selected' : 'available'} ${isToday && !isSelected ? 'today' : ''}"
+                ${!isPast && !isWeekend ? `onclick="selectDate('${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}')"` : ''}
+              >${d}</div>`;
+            }).join('')}
+          </div>
+          <p style="font-size:12px;color:var(--gray-400);margin-top:12px">* Sundays and government holidays are unavailable</p>
+        </div>
+
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">
+            ${selectedDate ? `Available Slots — ${fmtDate(selectedDate)}` : 'Select a date to view slots'}
+          </h3>
+          ${selectedDate ? `
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="time-slots">
+              ${timeSlots.map(t => {
+                const key = selectedDate + '_' + t;
+                const booked = bookedSlots.includes(key);
+                return `<div class="time-slot ${booked ? 'booked' : selectedTime === t ? 'selected' : ''}"
+                  ${!booked ? `onclick="selectTime('${t}')"` : ''}>${t}</div>`;
+              }).join('')}
+            </div>
+
+            ${selectedTime ? `
+              <div style="margin-top:20px;padding:16px;background:var(--success-bg);border-radius:var(--radius);border:1px solid rgba(26,107,60,.15)">
+                <div style="font-size:14px;font-weight:600;color:var(--success);margin-bottom:8px">✓ Slot Selected</div>
+                <div style="font-size:14px">${fmtDate(selectedDate)} at ${selectedTime}</div>
+              </div>
+              <div class="form-group mt-4">
+                <label class="form-label">Select Application</label>
+                <select class="form-input form-select" id="appt-app">
+                  <option value="">-- Select Application --</option>
+                  ${(DB.get('applications')||[]).filter(a=>a.userId===currentUser?.id).map(a=>`<option value="${a.id}">${a.id} — ${a.personal?.fullName||''}</option>`).join('')}
+                </select>
+              </div>
+              <button class="btn btn-primary w-full mt-2" style="justify-content:center" onclick="bookAppointment()">Confirm Appointment</button>
+            ` : '<p style="font-size:13px;color:var(--gray-400);margin-top:16px">Click a slot to select it.</p>'}
+          ` : `
+            <div style="text-align:center;padding:40px 0;color:var(--gray-300)">${icon('calendar')}<p style="margin-top:12px;font-size:14px">Pick a date from the calendar</p></div>
+          `}
+        </div>
+      </div>
+
+      <!-- Existing appointments -->
+      <div class="card mt-6" style="overflow:hidden">
+        <div class="p-4 border-b"><h3 style="font-size:16px;font-weight:600;color:var(--navy)">Your Appointments</h3></div>
+        <table class="data-table">
+          <thead><tr><th>Application ID</th><th>Date</th><th>Time</th><th>Center</th><th>Status</th></tr></thead>
+          <tbody>
+            ${(DB.get('applications')||[]).filter(a=>a.userId===currentUser?.id&&a.appointmentDate).map(a=>`
+              <tr><td class="app-id">${a.id}</td><td>${fmtDate(a.appointmentDate)}</td><td>${a.appointmentTime}</td><td>${a.center}</td><td>${statusBadge(a.status)}</td></tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:24px">No appointments scheduled</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>`;
+}
+
+function selectDate(d) {
+  selectedDate = d;
+  selectedTime = null;
+  const el = document.getElementById('time-slots');
+  const h = document.querySelector('.main-content h3');
+  rerenderApptPage();
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  rerenderApptPage();
+}
+
+function rerenderApptPage() {
+  const content = document.querySelector('.main-content');
+  if (content) content.outerHTML = `<main class="main-content animate-fade">${pageAppointments().split('<main class="main-content animate-fade">')[1]?.split('</main>')[0] || ''}</main>`;
+  render();
+}
+
+function bookAppointment() {
+  const appEl = document.getElementById('appt-app');
+  const appId2 = appEl?.value;
+  if (!appId2) { toast('Please select an application.', 'danger'); return; }
+  if (!selectedDate || !selectedTime) { toast('Please select date and time.', 'danger'); return; }
+
+  const apps = DB.get('applications') || [];
+  const idx = apps.findIndex(a => a.id === appId2);
+  if (idx === -1) return;
+  apps[idx].appointmentDate = selectedDate;
+  apps[idx].appointmentTime = selectedTime;
+  DB.set('applications', apps);
+
+  const slots = DB.get('slots') || [];
+  slots.push(selectedDate + '_' + selectedTime);
+  DB.set('slots', slots);
+
+  const notifs = DB.get('notifications') || [];
+  notifs.unshift({ id: 'n' + Date.now(), userId: currentUser.id, title: 'Appointment Confirmed', body: `Your appointment is confirmed for ${fmtDate(selectedDate)} at ${selectedTime}.`, time: 'Just now', read: false, type: 'success' });
+  DB.set('notifications', notifs);
+
+  selectedDate = null; selectedTime = null;
+  toast('Appointment booked successfully!', 'success');
+  setPage('appointments');
+}
+
+// ── NOTIFICATIONS ──
+function pageNotifications() {
+  const notifs = (DB.get('notifications') || []).filter(n => n.userId === currentUser?.id);
+  const markAll = () => {
+    const all = DB.get('notifications') || [];
+    all.forEach(n => { if (n.userId === currentUser.id) n.read = true; });
+    DB.set('notifications', all);
+    toast('All marked as read', 'success');
+    setPage('notifications');
+  };
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div>
+          <h1 class="page-title">Notifications</h1>
+          <p class="page-subtitle">${notifs.filter(n=>!n.read).length} unread</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all as read</button>
+      </div>
+      <div class="card" style="overflow:hidden">
+        ${notifs.length > 0 ? notifs.map(n => `
+          <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead('${n.id}')">
+            <span class="notif-dot ${n.read ? 'read' : ''}"></span>
+            <div style="flex:1">
+              <div class="notif-title">${n.title}</div>
+              <div class="notif-body">${n.body}</div>
+              <div class="notif-time">${n.time}</div>
+            </div>
+            <span class="badge ${n.type==='success'?'badge-success':n.type==='danger'?'badge-danger':'badge-info'}">${n.type}</span>
+          </div>
+        `).join('') : `<div class="p-8 text-center text-muted">No notifications</div>`}
+      </div>
+    </main>
+  </div>`;
+}
+
+window.markAllRead = function() {
+  const all = DB.get('notifications') || [];
+  all.forEach(n => { if (n.userId === currentUser?.id) n.read = true; });
+  DB.set('notifications', all);
+  toast('All marked as read', 'success');
+  setPage('notifications');
+};
+
+window.markRead = function(id) {
+  const all = DB.get('notifications') || [];
+  const n = all.find(n => n.id === id);
+  if (n) { n.read = true; DB.set('notifications', all); setPage('notifications'); }
+};
+
+// ── PROFILE ──
+function pageProfile() {
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header">
+        <h1 class="page-title">My Profile</h1>
+        <p class="page-subtitle">Manage your personal information and account settings</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:24px">
+        <div>
+          <div class="card p-6 text-center mb-4">
+            <div style="width:80px;height:80px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:700;color:var(--gold)">${currentUser.avatar || getInitials(currentUser.name)}</div>
+            <div style="font-size:18px;font-weight:600;color:var(--navy)">${currentUser.name}</div>
+            <div style="font-size:13px;color:var(--gray-400)">${currentUser.email}</div>
+            <span class="badge badge-gold mt-2">${currentUser.role.toUpperCase()}</span>
+            <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100)">
+              <div style="font-size:12px;color:var(--gray-400)">Member since</div>
+              <div style="font-size:14px;font-weight:500;color:var(--navy)">${fmtDate(currentUser.createdAt)}</div>
+            </div>
+          </div>
+          <div class="card p-4">
+            <h4 style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:12px">Account Security</h4>
+            ${[
+              ['Password', '●●●●●●●●', 'Change'],
+              ['2FA', 'Not enabled', 'Enable'],
+              ['Login Activity', 'Last login: Today', 'View'],
+            ].map(([l, v, a]) => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-50)">
+                <div><div style="font-size:13px;font-weight:500">${l}</div><div style="font-size:12px;color:var(--gray-400)">${v}</div></div>
+                <button class="btn btn-ghost btn-sm" onclick="toast('Feature coming soon','default')">${a}</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:20px">Personal Information</h3>
+          <div id="profile-alert"></div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" id="pr-name" value="${currentUser.name}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input class="form-input" id="pr-email" value="${currentUser.email}" type="email">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Mobile Number</label>
+              <input class="form-input" id="pr-phone" value="${currentUser.phone||''}" placeholder="10-digit mobile">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth</label>
+              <input class="form-input" id="pr-dob" type="date" value="${currentUser.dob||''}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Aadhaar Number (masked)</label>
+            <input class="form-input" value="${currentUser.aadhaar||''}" placeholder="XXXX-XXXX-XXXX">
+            <p class="form-helper">Link your Aadhaar for faster processing</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preferred Language</label>
+            <select class="form-input form-select">
+              ${['English','Hindi','Bengali','Tamil','Telugu','Marathi','Kannada'].map(l=>`<option>${l}</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:flex-end">
+            <button class="btn btn-ghost" onclick="setPage('dashboard')">Cancel</button>
+            <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+function saveProfile() {
+  const name = document.getElementById('pr-name')?.value.trim();
+  const email = document.getElementById('pr-email')?.value.trim();
+  const phone = document.getElementById('pr-phone')?.value.trim();
+  const dob = document.getElementById('pr-dob')?.value;
+  if (!name || !email) { toast('Name and email are required.', 'danger'); return; }
+  const users = DB.get('users') || [];
+  const idx = users.findIndex(u => u.id === currentUser.id);
+  if (idx !== -1) {
+    users[idx] = { ...users[idx], name, email, phone, dob, avatar: getInitials(name) };
+    DB.set('users', users);
+    login(users[idx]);
+    toast('Profile updated successfully!', 'success');
+    setPage('profile');
+  }
+}
+
+// ── ADMIN OVERVIEW ──
+function pageAdmin() {
+  const apps = DB.get('applications') || [];
+  const users = DB.get('users') || [];
+  const pending = apps.filter(a => ['submitted','scrutiny'].includes(a.status));
+  const approved = apps.filter(a => a.status === 'approved');
+  const inPV = apps.filter(a => a.status === 'police_verification');
+
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div>
+          <h1 class="page-title">Admin Overview</h1>
+          <p class="page-subtitle">System dashboard — ${new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</p>
+        </div>
+        <div class="flex gap-2">
+          <span class="badge badge-success">System Online</span>
+          <button class="btn btn-gold btn-sm" onclick="toast('Analytics report generated!','success')">${icon('pdf')} Export Report</button>
+        </div>
+      </div>
+
+      <div class="grid-4 mb-6">
+        <div class="stat-card navy"><div class="stat-label">Total Applications</div><div class="stat-value">${apps.length}</div><div class="stat-change up">↑ All time</div></div>
+        <div class="stat-card gold"><div class="stat-label">Pending Review</div><div class="stat-value">${pending.length}</div><div class="stat-change">Needs attention</div></div>
+        <div class="stat-card success"><div class="stat-label">Approved</div><div class="stat-value">${approved.length}</div><div class="stat-change up">↑ Ready</div></div>
+        <div class="stat-card danger"><div class="stat-label">Registered Users</div><div class="stat-value">${users.filter(u=>u.role==='user').length}</div><div class="stat-change">Citizens</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Applications by Status</h3>
+          ${[
+            ['Submitted', apps.filter(a=>a.status==='submitted').length, 'info'],
+            ['Under Scrutiny', apps.filter(a=>a.status==='scrutiny').length, 'warning'],
+            ['Police Verification', inPV.length, 'warning'],
+            ['Approved', approved.length, 'success'],
+            ['Rejected', apps.filter(a=>a.status==='rejected').length, 'danger'],
+            ['Dispatched', apps.filter(a=>a.status==='dispatched').length, 'gold'],
+          ].map(([l, n, t]) => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-50)">
+              <span style="font-size:14px;color:var(--gray-600)">${l}</span>
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:80px;height:6px;background:var(--gray-100);border-radius:99px;overflow:hidden"><div style="height:100%;background:var(--${t==='info'?'info':t==='warning'?'gold':t==='success'?'success':t==='danger'?'danger':'navy'});border-radius:99px;width:${apps.length > 0 ? (n/apps.length*100) : 0}%"></div></div>
+                <span class="badge badge-${t}">${n}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">High Priority Actions</h3>
+          ${pending.length === 0 ? `<p style="font-size:14px;color:var(--gray-400)">No pending actions. All caught up!</p>` :
+            pending.map(a => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-50)">
+                <div>
+                  <div class="app-id">${a.id}</div>
+                  <div style="font-size:12px;color:var(--gray-400)">${a.personal?.fullName} · ${fmtDate(a.submittedAt)}</div>
+                </div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-success btn-sm" onclick="adminAction('${a.id}','approved')">Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="adminAction('${a.id}','rejected')">Reject</button>
+                </div>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+
+      <!-- Recent Applications Table -->
+      <div class="card" style="overflow:hidden">
+        <div class="flex items-center justify-between p-4 border-b">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy)">All Applications</h3>
+          <button class="btn btn-ghost btn-sm" onclick="setPage('admin_apps')">View All</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>App ID</th><th>Applicant</th><th>Type</th><th>Category</th><th>Status</th><th>Fraud Score</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            ${apps.slice(0, 5).map(a => `
+              <tr>
+                <td class="app-id">${a.id}</td>
+                <td style="font-weight:500">${a.personal?.fullName || '—'}</td>
+                <td>${a.type}</td>
+                <td><span class="badge ${a.category==='tatkal'?'badge-warning':'badge-gray'}">${a.category}</span></td>
+                <td>${statusBadge(a.status)}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:6px">
+                    <div style="width:40px;height:4px;background:var(--gray-100);border-radius:99px;overflow:hidden"><div style="height:100%;width:${a.fraudScore}%;background:${a.fraudScore<30?'var(--success)':a.fraudScore<60?'var(--gold)':'var(--danger)'}"></div></div>
+                    <span style="font-size:12px;color:var(--gray-400)">${a.fraudScore}</span>
+                  </div>
+                </td>
+                <td>
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-ghost btn-sm" onclick="adminViewApp('${a.id}')">${icon('eye')}</button>
+                    ${['submitted','scrutiny','police_verification'].includes(a.status) ? `
+                      <button class="btn btn-success btn-sm" onclick="adminAction('${a.id}','approved')">✓</button>
+                      <button class="btn btn-danger btn-sm" onclick="adminAction('${a.id}','rejected')">✗</button>
+                    ` : ''}
+                    ${a.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="adminAction('${a.id}','dispatched')">Dispatch</button>` : ''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>`;
+}
+
+function adminAction(appId, newStatus) {
+  const apps = DB.get('applications') || [];
+  const idx = apps.findIndex(a => a.id === appId);
+  if (idx === -1) return;
+  apps[idx].status = newStatus;
+  apps[idx].updatedAt = new Date().toISOString();
+
+  // Update timeline
+  const tl = apps[idx].timeline;
+  if (newStatus === 'scrutiny') { tl[1].done = true; tl[1].date = new Date().toLocaleString('en-IN'); tl[1].active = false; tl[2].active = true; }
+  if (newStatus === 'police_verification') { tl[2].done = false; tl[2].active = true; tl[2].date = new Date().toLocaleString('en-IN'); }
+  if (newStatus === 'approved') { tl[2].done = true; tl[2].active = false; tl[3].done = true; tl[3].active = true; tl[3].date = new Date().toLocaleString('en-IN'); }
+  if (newStatus === 'rejected') { }
+  if (newStatus === 'dispatched') { tl[4].done = true; tl[4].date = new Date().toLocaleString('en-IN'); }
+
+  // Add officer note
+  apps[idx].notes = `Status updated to ${newStatus.replace('_',' ')} by Admin Officer on ${new Date().toLocaleDateString('en-IN')}`;
+  DB.set('applications', apps);
+
+  // Notify user
+  const notifs = DB.get('notifications') || [];
+  notifs.unshift({ id: 'n' + Date.now(), userId: apps[idx].userId, title: `Application ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('_',' ')}`, body: `Your application ${appId} status has been updated to: ${newStatus.replace('_',' ')}.`, time: 'Just now', read: false, type: newStatus === 'approved' || newStatus === 'dispatched' ? 'success' : newStatus === 'rejected' ? 'danger' : 'info' });
+  DB.set('notifications', notifs);
+
+  toast(`Application ${newStatus.replace('_',' ')}!`, newStatus === 'approved' || newStatus === 'dispatched' ? 'success' : 'warning');
+  setPage(currentPage);
+}
+
+function adminViewApp(id) {
+  viewingApp = id;
+  setPage('view_app');
+}
+
+// ── ADMIN APPS ──
+function pageAdminApps() {
+  const apps = DB.get('applications') || [];
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header flex items-center justify-between">
+        <div><h1 class="page-title">All Applications</h1><p class="page-subtitle">${apps.length} total</p></div>
+        <div style="display:flex;gap:8px">
+          <select class="form-input form-select" style="width:160px" onchange="filterApps(this.value)">
+            <option value="">All Status</option>
+            ${['submitted','scrutiny','police_verification','approved','rejected','dispatched'].map(s=>`<option value="${s}">${s.replace('_',' ')}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <table class="data-table" id="admin-apps-table">
+          <thead><tr><th>App ID</th><th>Applicant</th><th>Type</th><th>Category</th><th>Submitted</th><th>Status</th><th>Fraud</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${apps.map(a => `
+              <tr data-status="${a.status}">
+                <td class="app-id">${a.id}</td>
+                <td><div style="font-weight:500">${a.personal?.fullName||'—'}</div><div style="font-size:11px;color:var(--gray-400)">${a.personal?.email||''}</div></td>
+                <td>${a.type}</td>
+                <td><span class="badge ${a.category==='tatkal'?'badge-warning':'badge-gray'}">${a.category}</span></td>
+                <td>${fmtDate(a.submittedAt)}</td>
+                <td>${statusBadge(a.status)}</td>
+                <td><span class="badge ${a.fraudScore<30?'badge-success':a.fraudScore<60?'badge-warning':'badge-danger'}">${a.fraudScore}</span></td>
+                <td>
+                  <div style="display:flex;gap:4px">
+                    <button class="btn btn-ghost btn-sm" onclick="adminViewApp('${a.id}')">${icon('eye')}</button>
+                    ${['submitted','scrutiny','police_verification'].includes(a.status)?`<button class="btn btn-success btn-sm" onclick="adminAction('${a.id}','approved')">✓</button><button class="btn btn-danger btn-sm" onclick="adminAction('${a.id}','rejected')">✗</button>`:''}
+                    ${a.status==='approved'?`<button class="btn btn-primary btn-sm" onclick="adminAction('${a.id}','dispatched')">Dispatch</button>`:''}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>`;
+}
+
+window.filterApps = function(status) {
+  const rows = document.querySelectorAll('#admin-apps-table tbody tr');
+  rows.forEach(r => r.style.display = (!status || r.dataset.status === status) ? '' : 'none');
+};
+
+// ── ADMIN USERS ──
+function pageAdminUsers() {
+  const users = (DB.get('users') || []).filter(u => u.role === 'user');
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header"><h1 class="page-title">User Management</h1><p class="page-subtitle">${users.length} registered citizens</p></div>
+      <div class="card" style="overflow:hidden">
+        <table class="data-table">
+          <thead><tr><th>User</th><th>Email</th><th>Phone</th><th>Registered</th><th>Applications</th><th>Status</th></tr></thead>
+          <tbody>
+            ${users.map(u => {
+              const userApps = (DB.get('applications')||[]).filter(a=>a.userId===u.id);
+              return `
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--gold);flex-shrink:0">${u.avatar||getInitials(u.name)}</div>
+                    <div style="font-weight:500">${u.name}</div>
+                  </div>
+                </td>
+                <td style="font-size:13px">${u.email}</td>
+                <td style="font-size:13px">${u.phone||'—'}</td>
+                <td>${fmtDate(u.createdAt)}</td>
+                <td><span class="badge badge-info">${userApps.length}</span></td>
+                <td><span class="badge ${u.verified?'badge-success':'badge-warning'}">${u.verified?'Verified':'Pending'}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>`;
+}
+
+// ── ANALYTICS ──
+function pageAnalytics() {
+  const apps = DB.get('applications') || [];
+  const bars = [
+    { label: 'Nov W1', n: 12 }, { label: 'Nov W2', n: 18 }, { label: 'Nov W3', n: 15 }, { label: 'Nov W4', n: 22 },
+    { label: 'Dec W1', n: apps.length }, { label: 'Dec W2', n: 8 },
+  ];
+  const maxN = Math.max(...bars.map(b => b.n));
+
+  return `
+  <div class="layout">
+    ${renderSidebar()}
+    <main class="main-content animate-fade">
+      <div class="page-header"><h1 class="page-title">Analytics Dashboard</h1><p class="page-subtitle">Application trends and processing metrics</p></div>
+
+      <div class="grid-4 mb-6">
+        ${[
+          ['Total This Month', apps.length, 'up', '+12%'],
+          ['Avg Processing Days', '14', '', 'Normal'],
+          ['Approval Rate', '87%', 'up', 'Good'],
+          ['Fraud Flags', apps.filter(a=>a.fraudScore>50).length, 'down', 'Flagged'],
+        ].map(([l,v,dir,note]) => `
+          <div class="stat-card ${dir==='up'?'success':dir==='down'?'danger':'navy'}">
+            <div class="stat-label">${l}</div>
+            <div class="stat-value">${v}</div>
+            <div class="stat-change ${dir}">${note}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px">
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:20px">Weekly Application Volume</h3>
+          <div style="display:flex;align-items:flex-end;gap:12px;height:160px">
+            ${bars.map(b => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
+                <span style="font-size:12px;font-weight:600;color:var(--navy)">${b.n}</span>
+                <div style="width:100%;background:var(--navy);border-radius:4px 4px 0 0;height:${(b.n/maxN*130)}px;transition:height .3s ease"></div>
+                <span style="font-size:11px;color:var(--gray-400);white-space:nowrap">${b.label}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Processing Type Split</h3>
+          ${[
+            ['Normal', apps.filter(a=>a.category==='normal').length, 'var(--navy)'],
+            ['Tatkal', apps.filter(a=>a.category==='tatkal').length, 'var(--gold)'],
+          ].map(([l,n,c]) => `
+            <div style="margin-bottom:16px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px">
+                <span>${l}</span>
+                <span style="font-weight:600">${n} (${apps.length?Math.round(n/apps.length*100):0}%)</span>
+              </div>
+              <div style="height:10px;background:var(--gray-100);border-radius:99px;overflow:hidden">
+                <div style="height:100%;background:${c};border-radius:99px;width:${apps.length?n/apps.length*100:0}%;transition:width .5s ease"></div>
+              </div>
+            </div>
+          `).join('')}
+
+          <h4 style="font-size:13px;font-weight:600;color:var(--gray-600);margin:20px 0 12px">Status Distribution</h4>
+          ${[
+            ['Submitted', apps.filter(a=>a.status==='submitted').length, '#1a4a7a'],
+            ['In Progress', apps.filter(a=>['scrutiny','police_verification'].includes(a.status)).length, '#7a5200'],
+            ['Approved', apps.filter(a=>a.status==='approved').length, '#1a6b3c'],
+            ['Rejected', apps.filter(a=>a.status==='rejected').length, '#8b1a1a'],
+          ].map(([l,n,c]) => `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="width:10px;height:10px;border-radius:50%;background:${c};flex-shrink:0"></div>
+              <span style="font-size:13px;flex:1">${l}</span>
+              <span style="font-size:13px;font-weight:600">${n}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:16px">Center-wise Application Load</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          ${['PSK Delhi (CP)','PSK Gurugram','PSK Mumbai','PSK Bengaluru','PSK Chennai','PSK Hyderabad','PSK Kolkata','PSK Pune'].map((center,i) => {
+            const n = [14,8,22,11,7,9,6,5][i];
+            return `
+            <div style="padding:16px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-100)">
+              <div style="font-size:13px;font-weight:500;color:var(--navy);margin-bottom:8px">${center}</div>
+              <div style="font-family:var(--font-serif);font-size:24px;font-weight:600;color:var(--navy)">${n}</div>
+              <div style="font-size:11px;color:var(--gray-400)">applications</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </main>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MAIN RENDER
+// ═══════════════════════════════════════════════════════
+function render() {
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  let html = '';
+
+  // Require auth for protected pages
+  const protectedPages = ['dashboard','new_app','my_apps','view_app','track','appointments','notifications','profile','admin','admin_apps','admin_users','analytics'];
+  if (protectedPages.includes(currentPage) && !currentUser) {
+    setPage('login');
+    return;
+  }
+
+  // Admin-only pages
+  const adminPages = ['admin','admin_apps','admin_users','analytics'];
+  if (adminPages.includes(currentPage) && currentUser?.role !== 'admin') {
+    setPage('dashboard');
+    return;
+  }
+
+  switch (currentPage) {
+    case 'landing': html = pageLanding(); break;
+    case 'login': html = pageLogin(); break;
+    case 'register': html = pageRegister(); break;
+    case 'forgot': html = pageForgot(); break;
+    case 'dashboard': html = `${renderGovtBanner()}${renderNavbar()}${pageDashboard()}`; break;
+    case 'new_app': html = `${renderGovtBanner()}${renderNavbar()}${pageNewApp()}`; break;
+    case 'my_apps': html = `${renderGovtBanner()}${renderNavbar()}${pageMyApps()}`; break;
+    case 'view_app': html = `${renderGovtBanner()}${renderNavbar()}${pageViewApp()}`; break;
+    case 'track': html = `${renderGovtBanner()}${renderNavbar()}${pageTrack()}`; break;
+    case 'appointments': html = `${renderGovtBanner()}${renderNavbar()}${pageAppointments()}`; break;
+    case 'notifications': html = `${renderGovtBanner()}${renderNavbar()}${pageNotifications()}`; break;
+    case 'profile': html = `${renderGovtBanner()}${renderNavbar()}${pageProfile()}`; break;
+    case 'admin': html = `${renderGovtBanner()}${renderNavbar()}${pageAdmin()}`; break;
+    case 'admin_apps': html = `${renderGovtBanner()}${renderNavbar()}${pageAdminApps()}`; break;
+    case 'admin_users': html = `${renderGovtBanner()}${renderNavbar()}${pageAdminUsers()}`; break;
+    case 'analytics': html = `${renderGovtBanner()}${renderNavbar()}${pageAnalytics()}`; break;
+    default: html = pageLanding();
+  }
+
+  app.innerHTML = html;
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', (e) => {
+    const dd = document.getElementById('user-dropdown');
+    const wrap = document.getElementById('user-menu-wrap');
+    if (dd && wrap && !wrap.contains(e.target)) dd.style.display = 'none';
+  }, { once: true });
+}
+
+// Initial render
+render();
+
+// If user was on a page that needs auth and they're logged in, go to dashboard
+if (!currentPage || currentPage === 'landing') {
+  if (currentUser) setPage('dashboard');
+}
+</script>
+</body>
+</html>
